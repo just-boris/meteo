@@ -12,6 +12,7 @@
                 if (error) return console.warn(error);
                 return new Plot(json.list.map(function(d) {
                     return {
+                        clouds: d.weather[0].icon,
                         time: d.dt*1000,
                         temp: d.main.temp
                     }

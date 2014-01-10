@@ -17,7 +17,7 @@ window.Plot = (function(d3) {
         return dest;
     }
     function Plot(data, element, options) {
-        var opts = extend({}, options, {margin: {left: 40, right: 40, top: 40, bottom: 40}});
+        var opts = extend({}, options, {margin: {left: 40, right: 40, top: 40, bottom: 100}});
         this.svg = element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
@@ -34,7 +34,6 @@ window.Plot = (function(d3) {
             .attr("x", -10)
             .attr('y', -20)
             .attr("dy", ".25em")
-            .style("text-anchor", "end")
             .text("°C");
 
         this.plot.selectAll('.x.axis .tick').append('text').attr({
@@ -45,6 +44,16 @@ window.Plot = (function(d3) {
         }).text(function(d) {
             return d3.time.format('%_d %b')(d);
         });
+        this.plot.selectAll('.x.axis .tick').append('image').attr({
+            y: 35,
+            x: -25,
+            width: 50,
+            height: 50,
+            'xlink:href': function(d, i) {
+                return 'http://openweathermap.org/img/w/'+data[i].clouds+'.png';
+            }
+        });
+
         this.plot.append('line').attr({
             x1: x.range()[0], y1: y(0),
             x2: x.range()[1], y2: y(0)
