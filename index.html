@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forecast</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="plot.js" charset="utf-8"></script>
+    <script>
+        (function(d3) {
+            d3.json("http://api.openweathermap.org/data/2.5/forecast?q=Saint%20Petersburg&mode=json&units=metric", function(error, json) {
+                if (error) return console.warn(error);
+                return new Plot(json.list.map(function(d) {
+                    return {
+                        time: d.dt*1000,
+                        temp: d.main.temp
+                    }
+                }), d3.select('.plot'), {
+                    title: json.city.name,
+                    width: 800, height: 400
+                });
+            });
+        })(d3);
+
+    </script>
+</head>
+<body>
+    <div class="plot"></div>
+</body>
+</html>
