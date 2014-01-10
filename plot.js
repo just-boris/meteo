@@ -54,10 +54,12 @@ window.Plot = (function(d3) {
             }
         });
 
-        this.plot.append('line').attr({
-            x1: x.range()[0], y1: y(0),
-            x2: x.range()[1], y2: y(0)
-        });
+        if(tempBounds[0]*tempBounds[1] < 0) {
+            this.plot.append('line').attr({
+                x1: x.range()[0], y1: y(0),
+                x2: x.range()[1], y2: y(0)
+            });    
+        }
 
         var line = d3.svg.line()
             .x(function(d) {
@@ -65,7 +67,7 @@ window.Plot = (function(d3) {
             })
             .y(y(tempBounds[1]));
 
-        this.createGradient('pathFill', this.getColorStops.apply(this, y.domain().slice(0)));
+        this.createGradient('pathFill', this.getColorStops(tempBounds[0], tempBounds[1]));
         var path = this.plot.append("path")
             .datum(data)
             .attr("class", "line").style('stroke', 'url(#pathFill)')
