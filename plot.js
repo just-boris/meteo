@@ -1,7 +1,7 @@
 window.TemperaturePlot = (function(d3, Util) {
     function TemperaturePlot(data, element, options) {
         var self = this,
-            opts = _.extend({}, options, {margin: {left: 40, right: 40, top: 40, bottom: 100}});
+            opts = _.extend({}, options, {margin: {left: 40, right: 20, top: 40, bottom: 70}});
         this.dayInfoTpl = _.template(d3.select('#day-info\\.tpl').html());
         this.svg = element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);

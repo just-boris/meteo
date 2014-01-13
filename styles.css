@@ -11,11 +11,10 @@ div {
     overflow: hidden;
 }
 .widgets>div {
-    padding: 15px;
     float: left;
     width: 50%;
-    min-height: 440px;
-    min-width: 680px;
+    height: 410px;
+    min-width: 650px;
 }
 
 .widgets>div:hover {
@@ -57,14 +56,12 @@ div {
 }
 
 .now {
+    padding: 15px;
     position: relative;
 }
 
 .now .city {
     font-weight: 200;
-}
-
-.now .city {
     font-size: 2em;
     margin: 0;
 }
@@ -78,6 +75,7 @@ div {
 .now .properties {
     width: 50%;
     margin: 0 auto;
+    min-width: 400px;
     position: relative;
 }
 
@@ -86,6 +84,53 @@ div {
     width: 50%;
 }
 
+.now .properties_col p {
+    margin-bottom: 0;
+}
+
 .now .properties_col:first-letter{
     text-transform: capitalize
+}
+
+.clock {
+    position: relative;
+}
+
+.clock .date {
+    margin: 15px;
+    font-weight: 200;
+    font-size: 2em;
+}
+
+.clock .time {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: 12em;
+}
+
+.add_more {
+    cursor: pointer;
+    position: relative;
+}
+.add_more.inactive {
+    cursor: default;
+}
+
+.add_more div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-weight: 200;
+    font-size: 2em;
 }

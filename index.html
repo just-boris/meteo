@@ -12,11 +12,15 @@
     <script src="util.js" charset="utf-8"></script>
     <script src="plot.js" charset="utf-8"></script>
     <script src="tempNow.js" charset="utf-8"></script>
+    <script src="timeNow.js" charset="utf-8"></script>
+    <script src="addBtn.js" charset="utf-8"></script>
 </head>
 <body>
     <div class="widgets">
         <div class="now"></div>
         <div class="plot"></div>
+        <div class="clock"></div>
+        <div class="add_more"></div>
     </div>
     <script id="now.tpl" type="text/template">
         <h1 class="city"><%= city %></h1>
@@ -69,6 +73,8 @@
                     pressure: json.list[0].main.pressure,
                     weather: json.list[0].weather[0]
                 }, d3.select('.now'));
+                new TimeNow(d3.select('.clock'));
+                new AddBtn(d3.select('.add_more'))
             });
         })(d3);
     </script>
