@@ -1,4 +1,4 @@
-window.Util = (function() {
+define(function() {
     return {
         /*from http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes*/
         getCloudIcon: function(cloudId, time) {
@@ -35,4 +35,4 @@ window.Util = (function() {
             return (temperature > 0 ? '+' : '')+temperature.toFixed(presition || 0);
         }
     }
-})();
+});

@@ -1,4 +1,4 @@
-window.AddBtn = (function() {
+define(function() {
     function AddBtn(element) {
         var text = element.append('div').text('Add more!');
         element.on('click', function() {
@@ -6,5 +6,6 @@ window.AddBtn = (function() {
             text.text('Come back later!');
         });
     }
+    AddBtn.className = 'add_more';
     return AddBtn;
-})();
+});

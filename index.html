@@ -7,21 +7,10 @@
     <link href='http://fonts.googleapis.com/css?family=Exo+2:400,200' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="weather-icons/weather-icons.css">
     <link rel="stylesheet" href="styles.css">
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="http://yandex.st/underscore/1.5.2/underscore-min.js" charset="utf-8"></script>
-    <script src="util.js" charset="utf-8"></script>
-    <script src="plot.js" charset="utf-8"></script>
-    <script src="tempNow.js" charset="utf-8"></script>
-    <script src="timeNow.js" charset="utf-8"></script>
-    <script src="addBtn.js" charset="utf-8"></script>
+    <script data-main="app" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 </head>
 <body>
-    <div class="widgets">
-        <div class="now"></div>
-        <div class="plot"></div>
-        <div class="clock"></div>
-        <div class="add_more"></div>
-    </div>
+    <div class="widgets"></div>
     <script id="now.tpl" type="text/template">
         <h1 class="city"><%= city %></h1>
         <div class="weather">
@@ -47,36 +36,6 @@
             <span><%= temp %></span>
             <span class="<%= cloudIcon %>"></span>
         </div>
-    </script>
-    <script type="text/javascript">
-        (function(d3) {
-            d3.json("http://api.openweathermap.org/data/2.5/forecast?q=Saint%20Petersburg&mode=json&units=metric", function(error, json) {
-                if (error) {
-                    console.warn(error);
-                    return;
-                }
-                new TemperaturePlot(json.list.map(function(d) {
-                    return {
-                        weather: d.weather[0],
-                        time: d.dt*1000,
-                        temp: d.main.temp
-                    }
-                }), d3.select('.plot'), {
-                    width: 600, height: 300
-                });
-                new TempNow({
-                    city: json.city.name,
-                    temp: json.list[0].main.temp,
-                    tempMax: json.list[0].main.temp_max,
-                    tempMin: json.list[0].main.temp_min,
-                    humidity: json.list[0].main.humidity,
-                    pressure: json.list[0].main.pressure,
-                    weather: json.list[0].weather[0]
-                }, d3.select('.now'));
-                new TimeNow(d3.select('.clock'));
-                new AddBtn(d3.select('.add_more'))
-            });
-        })(d3);
     </script>
 </body>
 </html>

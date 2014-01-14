@@ -1,14 +1,14 @@
-window.TemperaturePlot = (function(d3, Util) {
-    function TemperaturePlot(data, element, options) {
+define(['d3', 'util', 'underscore'], function(d3, Util, _) {
+    function TemperaturePlot(element, data) {
         var self = this,
-            opts = _.extend({}, options, {margin: {left: 40, right: 20, top: 40, bottom: 70}});
+            opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 600, height: 300};
         this.dayInfoTpl = _.template(d3.select('#day-info\\.tpl').html());
         this.svg = element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
-        this.data = data;
-        var tempBounds = d3.extent(data, function(d) { return d.temp; });
-        var x = d3.time.scale().range([0, opts.width]).domain(d3.extent(data, function(d) { return d.time; })),
+        this.data = this.mapData(data);
+        var tempBounds = d3.extent(this.data, function(d) { return d.temp; });
+        var x = d3.time.scale().range([0, opts.width]).domain(d3.extent(this.data, function(d) { return d.time; })),
             y = d3.scale.linear().range([opts.height, 0]).domain(tempBounds).nice();
 
         var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat("");
@@ -56,7 +56,7 @@ window.TemperaturePlot = (function(d3, Util) {
 
         this.createGradient('pathFill', this.getColorStops(tempBounds[0], tempBounds[1]));
         var path = this.plot.append("path")
-            .datum(data)
+            .datum(this.data)
             .attr("class", "line").style('stroke', 'url(#pathFill)')
             .attr("d", line);
 
@@ -65,6 +65,15 @@ window.TemperaturePlot = (function(d3, Util) {
         });
         path.transition().duration(1000).attr('d', line);
     }
+    TemperaturePlot.prototype.mapData = function(rawData) {
+        return rawData.list.map(function(d) {
+            return {
+                weather: d.weather[0],
+                time: d.dt*1000,
+                temp: d.main.temp
+            }
+        });
+    };
     TemperaturePlot.prototype.getWeatherIcon = function(d, date) {
         return Util.getCloudIcon(d.weather.id, date);
     };
@@ -108,6 +117,6 @@ window.TemperaturePlot = (function(d3, Util) {
                 .attr("stop-opacity", 1);
         });
     };
-
+    TemperaturePlot.className = 'plot';
     return TemperaturePlot;
-})(d3, Util);
+});
