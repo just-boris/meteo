@@ -10,20 +10,48 @@ div {
     padding: 15px;
     overflow: hidden;
 }
-.widgets>div {
-    float: left;
-    width: 50%;
-    height: 410px;
-    min-width: 650px;
-}
-
-.widgets>div:hover {
+.widget, .widget_placeholder {
     -webkit-transition: box-shadow 0.3s;
     -moz-transition: box-shadow 0.3s;
     -ms-transition: box-shadow 0.3s;
     -o-transition: box-shadow 0.3s;
     transition: box-shadow 0.3s;
+    position: relative;
+    min-width: 650px;
+    height: 410px;
+    width: 50%;
+    float: left;
+}
+.widget__dragged {
+    position: absolute;
+    opacity: 0.6;
+    cursor: move;
+}
+
+.widget_placeholder {
+    box-shadow: 0 0 2px #1375ab;
+    border-radius: 10px;
+}
+
+.widget_close {
+    position: absolute;
+    cursor: pointer;
+    right: 10px;
+    top: 10px;
+    opacity: 0;
+}
+
+
+.widget:hover {
     box-shadow: 0 0 2px #bab;
+}
+.widget:hover .widget_close {
+    -webkit-transition: opacity 0.3s;
+    -moz-transition: opacity 0.3s;
+    -ms-transition: opacity 0.3s;
+    -o-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+    opacity: 1;
 }
 
 h1 {
@@ -79,7 +107,6 @@ h1, h2, h3 {
 
 .now, .clock {
     padding: 0 15px;
-    position: relative;
 }
 
 .now .properties {
@@ -104,7 +131,6 @@ h1, h2, h3 {
 
 .add_more {
     cursor: pointer;
-    position: relative;
 }
 .add_more.inactive {
     cursor: default;
