@@ -49,23 +49,23 @@ define('Draggable', ['d3'], function(d3) {
             .on('dragstart.draggable', function onDragStart() {
                 var position = this.getBoundingClientRect();
                 d3.select(this).classed('widget__dragged', true)
-                    .style('left', position.left+'px')
-                    .style('top', position.top+'px');
+                    .style('left', window.pageXOffset+position.left+'px')
+                    .style('top', window.pageYOffset+position.top+'px');
                 dragPlaceholder.dislodge(this);
             })
             .on('drag.draggable', function onDragWidget() {
                 this.style.display = "none";
                 var el = d3.select(this),
-                    left = parseFloat(el.style('left')),
-                    top = parseFloat(el.style('top')),
-                    widgetOver = findWidgetAtXY(d3.event.x, d3.event.y);
+                    left = parseFloat(el.style('left'))+d3.event.dx,
+                    top = parseFloat(el.style('top'))+d3.event.dy,
+                    widgetOver = findWidgetAtXY(left, top);
                 if(widgetOver) {
                     dragPlaceholder.dislodge(widgetOver);
                 }
                 this.style.display = "block";
                 el.style({
-                    left: left+d3.event.dx+'px',
-                    top: top+d3.event.dy+'px'
+                    left: left+'px',
+                    top: top+'px'
                 });
             })
             .on('dragend.draggable', function onDragEnd() {
