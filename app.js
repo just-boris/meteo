@@ -44,16 +44,24 @@ define('Draggable', ['d3'], function(d3) {
         return el;
     }
     return function(container) {
-        var dragPlaceholder = new WidgetPlaceholder(container.node());
-        return d3.behavior.drag()
+        function initDrag(element) {
+            var position = element.getBoundingClientRect();
+            d3.select(element).classed('widget__dragged', true)
+                .style('left', window.pageXOffset+position.left+'px')
+                .style('top', window.pageYOffset+position.top+'px');
+            dragPlaceholder.dislodge(element);
+            dragStarted = true;
+        }
+        var dragPlaceholder = new WidgetPlaceholder(container.node()),
+            drag = d3.behavior.drag()
             .on('dragstart.draggable', function onDragStart() {
-                var position = this.getBoundingClientRect();
-                d3.select(this).classed('widget__dragged', true)
-                    .style('left', window.pageXOffset+position.left+'px')
-                    .style('top', window.pageYOffset+position.top+'px');
-                dragPlaceholder.dislodge(this);
+                    dragStarted = false;
             })
             .on('drag.draggable', function onDragWidget() {
+                if(!dragStarted) {
+                    initDrag(this);
+                }
+                drag.origin();
                 this.style.display = "none";
                 var el = d3.select(this),
                     left = parseFloat(el.style('left'))+d3.event.dx,
@@ -69,12 +77,16 @@ define('Draggable', ['d3'], function(d3) {
                 });
             })
             .on('dragend.draggable', function onDragEnd() {
-                container.node().insertBefore(this, dragPlaceholder.el);
-                dragPlaceholder.hide();
-                d3.select(this).classed('widget__dragged', false)
-                    .style('left', null)
-                    .style('top', null);
-            });
+                if(dragStarted) {
+                    container.node().insertBefore(this, dragPlaceholder.el);
+                    dragPlaceholder.hide();
+                    d3.select(this).classed('widget__dragged', false)
+                        .style('left', null)
+                        .style('top', null);
+                }
+            }),
+            dragStarted = false;
+        return drag;
     };
 });
 require(['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {

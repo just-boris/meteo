@@ -3,6 +3,7 @@ body {
 }
 div {
     box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 .widgets {
     max-width: 1600px;
@@ -41,6 +42,10 @@ div {
     opacity: 0;
 }
 
+.widget_body {
+    width: 100%;
+    height: 100%;
+}
 
 .widget:hover {
     box-shadow: 0 0 2px #bab;
@@ -132,6 +137,10 @@ h1, h2, h3 {
 .add_more {
     cursor: pointer;
 }
-.add_more.inactive {
+.add_more .inactive {
     cursor: default;
+}
+/* this widget can not be closed because it adds all widgets */
+.add_more .widget_close {
+    display: none;
 }
