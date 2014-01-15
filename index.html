@@ -11,31 +11,5 @@
 </head>
 <body>
     <div class="widgets"></div>
-    <script id="now.tpl" type="text/template">
-        <h1 class="city"><%= city %></h1>
-        <div class="weather">
-            <span class="temp"><%= temp %></span>
-            <span class="clouds <%= cloudIcon %>"></span>
-        </div>
-        <div class="properties">
-            <div class="properties_col">
-                <p><%= weather.description %></p>
-                <p>Max: <%= tempMax %></p>
-                <p>Min: <%= tempMin %></p>
-            </div>
-            <div class="properties_col">
-                <p>Pressure: <%= pressure %> mm Hg</p>
-                <p>Humidity: <%= humidity %>%</p>
-            </div>
-        </div>
-    </script>
-    <script id="day-info.tpl" type="text/template">
-        <div class="day_info" title="<%= weather.description %>">
-            <div><%= time %></div>
-            <div><%= date %></div>
-            <span><%= temp %></span>
-            <span class="<%= cloudIcon %>"></span>
-        </div>
-    </script>
 </body>
 </html>

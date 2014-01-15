@@ -26,6 +26,32 @@ div {
     box-shadow: 0 0 2px #bab;
 }
 
+h1 {
+    margin: 15px 0;
+}
+
+h1, h2, h3 {
+    font-weight: 200;
+}
+
+.centered {
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.jumbotron {
+    font-size: 10em;
+    text-align: center;
+    line-height: 1.2;
+}
+
 .plot {
     text-align: center;
 }
@@ -47,29 +73,13 @@ div {
     text-anchor:middle;
 }
 
-.plot .content-test:before {
-    content: 'test';
-}
-
 .plot .day_info {
     text-align: center;
 }
 
-.now {
-    padding: 15px;
+.now, .clock {
+    padding: 0 15px;
     position: relative;
-}
-
-.now .city {
-    font-weight: 200;
-    font-size: 2em;
-    margin: 0;
-}
-
-.now .weather {
-    text-align: center;
-    font-size: 10em;
-    line-height: 1.4;
 }
 
 .now .properties {
@@ -92,45 +102,10 @@ div {
     text-transform: capitalize
 }
 
-.clock {
-    position: relative;
-}
-
-.clock .date {
-    margin: 15px;
-    font-weight: 200;
-    font-size: 2em;
-}
-
-.clock .time {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    -o-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    font-size: 12em;
-}
-
 .add_more {
     cursor: pointer;
     position: relative;
 }
 .add_more.inactive {
     cursor: default;
-}
-
-.add_more div {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    -o-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    font-weight: 200;
-    font-size: 2em;
 }

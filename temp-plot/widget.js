@@ -1,8 +1,8 @@
-define(['d3', 'util', 'underscore'], function(d3, Util, _) {
+define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(d3, Util, _, template) {
     function TemperaturePlot(element, data) {
         var self = this,
-            opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 600, height: 300};
-        this.dayInfoTpl = _.template(d3.select('#day-info\\.tpl').html());
+            opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 580, height: 300};
+        this.dayInfoTpl = _.template(template);
         this.svg = element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
