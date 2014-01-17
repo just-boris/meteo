@@ -12,7 +12,8 @@ define(['d3', 'geolocation', 'localStorage'], function(d3, geolocation, storage)
     var allWidgets = [
         {name: 'temp-now', title: 'Temperature now', description: 'Shows current weather and temperature'},
         {name: 'temp-plot', title: 'Temperature forecast', description: 'Weather forecast for the next 3 days'},
-        {name: 'clock', title: 'Digital clock', description: 'Date and time now'}
+        {name: 'clock', title: 'Digital clock', description: 'Date and time now'},
+        {name: 'stocks', title: 'Stocks', description: 'NASDAQ, NYSE, LSE, etc.'}
     ];
     return {
         getAllWidgets: function() {
