@@ -91,18 +91,22 @@ define('Draggable', ['d3'], function(d3) {
 });
 define('app', ['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {
     "use strict";
-    function Widget(name, WidgetFactory, json) {
-        var widgetCls = WidgetFactory.className;
+    function Widget(name, json) {
+        require([name+'/widget'], this.onLoad.bind(this));
         this.name = name;
+        this.json = json;
         this.element = container.append('div').classed('widget', true);
+        this.element.data([name]);
+        this.element.append('div').classed('widget_close fa fa-times', true).on('click', this.remove.bind(this));
+        this.element.call(drag);
+    }
+    Widget.prototype.onLoad = function(Factory) {
+        var widgetCls = Factory.className;
         if(widgetCls) {
             this.element.classed(widgetCls, true);
         }
-        this.element.data([name]);
-        this.element.append('div').classed('widget_close fa fa-times', true).on('click', this.remove.bind(this));
-        new WidgetFactory(this.element.append('div').classed('widget_body', true), json);
-        this.element.call(drag);
-    }
+        new Factory(this.element.append('div').classed('widget_body', true), this.json);
+    };
     Widget.prototype.remove = function() {
         this.element.remove();
     };
@@ -122,9 +126,7 @@ define('app', ['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {
                 return;
             }
             function createWidget(name) {
-                require([name+'/widget'], function(Factory) {
-                    widgets.push(new Widget(name, Factory, json));
-                });
+                widgets.push(new Widget(name, json));
             }
             app.createWidget = function(name) {
                 createWidget(name);
