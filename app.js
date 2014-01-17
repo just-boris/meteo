@@ -55,13 +55,16 @@ define('Draggable', ['d3'], function(d3) {
         var dragPlaceholder = new WidgetPlaceholder(container.node()),
             drag = d3.behavior.drag()
             .on('dragstart.draggable', function onDragStart() {
-                    dragStarted = false;
+                dragStarted = false;
+                dragPrevented = d3.event.sourceEvent.which !== 1;
             })
             .on('drag.draggable', function onDragWidget() {
+                if(dragPrevented) {
+                    return;
+                }
                 if(!dragStarted) {
                     initDrag(this);
                 }
-                drag.origin();
                 this.style.display = "none";
                 var el = d3.select(this),
                     left = parseFloat(el.style('left'))+d3.event.dx,
@@ -85,43 +88,62 @@ define('Draggable', ['d3'], function(d3) {
                         .style('top', null);
                 }
             }),
+            dragPrevented = false,
             dragStarted = false;
         return drag;
     };
 });
-require(['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {
+define('app', ['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {
     "use strict";
     function Widget(name, WidgetFactory, json) {
-        var widget = container.append('div').classed('widget', true),
-            widgetCls = WidgetFactory.className;
+        var widgetCls = WidgetFactory.className;
+        this.name = name;
+        this.element = container.append('div').classed('widget', true);
         if(widgetCls) {
-            widget.classed(widgetCls, true);
+            this.element.classed(widgetCls, true);
         }
-        widget.data([name]);
-        widget.append('div').classed('widget_close fa fa-times', true);
-        new WidgetFactory(widget.append('div').classed('widget_body', true), json);
-        widget.call(drag);
+        this.element.data([name]);
+        this.element.append('div').classed('widget_close fa fa-times', true).on('click', this.remove.bind(this));
+        new WidgetFactory(this.element.append('div').classed('widget_body', true), json);
+        this.element.call(drag);
     }
+    Widget.prototype.remove = function() {
+        this.element.remove();
+    };
     var API_URL = "http://api.openweathermap.org/data/2.5/forecast?q=Saint%20Petersburg&mode=json&units=metric",
         container = d3.select('.widgets'),
         drag = new Draggable(container),
-        widgetNames = storage.get();
+        widgetNames = storage.get(),
+        widgets = [],
+        app = {};
     drag.on('dragend', function() {
         storage.set(container.selectAll('.widget').data());
     });
-    require(widgetNames.map(function(name) {
-        return name+'/widget';
-    }), function() {
-        var widgets = Array.prototype.slice.call(arguments, 0);
-        d3.json(API_URL, function(error, json) {
-            if (error) {
-                console.warn(error);
-                return;
-            }
-            widgets.forEach(function(WidgetFactory, index) {
-                new Widget(widgetNames[index], WidgetFactory, json);
+    d3.json(API_URL, function(error, json) {
+        if (error) {
+            console.warn(error);
+            return;
+        }
+        function createWidget(name) {
+            require([name+'/widget'], function(Factory) {
+                widgets.push(new Widget(name, Factory, json));
             });
-        });
+        }
+        app.createWidget = function(name) {
+            createWidget(name);
+            widgetNames.push(name);
+            storage.set(widgetNames);
+        };
+        app.removeWidget = function(name) {
+            var widget = widgets.filter(function(w) {
+                return w.name === name;
+            })[0];
+            widgets.splice(widgets.indexOf(widget), 1);
+            widget.remove();
+            widgetNames.splice(widgetNames.indexOf(name), 1);
+            storage.set(widgetNames);
+        };
+        widgetNames.forEach(createWidget);
     });
-
+    return app;
 });

@@ -1,4 +1,6 @@
-define(['d3', 'util', 'text!temp-now/widget.tpl.html'], function(d3, Util, template) {
+/*global define */
+define(['d3', 'underscore', 'util', 'text!temp-now/widget.tpl.html'], function(d3, _, Util, template) {
+    "use strict";
     function TempNow(element, data) {
         data = this.mapData(data);
         element.html(_.template(template)(_.extend({}, data, {
@@ -18,14 +20,14 @@ define(['d3', 'util', 'text!temp-now/widget.tpl.html'], function(d3, Util, templ
     };
     TempNow.prototype.mapData = function(json) {
         return {
-            city: json.city.name,
+            city: json.city,
             temp: json.list[0].main.temp,
             tempMax: json.list[0].main.temp_max,
             tempMin: json.list[0].main.temp_min,
             humidity: json.list[0].main.humidity,
             pressure: json.list[0].main.pressure,
             weather: json.list[0].weather[0]
-        }
+        };
     };
     TempNow.className = 'now';
     return TempNow;
