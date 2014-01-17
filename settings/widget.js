@@ -17,7 +17,24 @@ define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.
             widgets: this.widgetData,
             city: this.data.city
         }));
+        this.cityBlock = this.modal.select('.modal_city');
+        this.editBtn = this.modal.select('.modal_edit').data([{editing: false}]).on('click', this.onEditCity.bind(this));
         this.modal.selectAll('.modal_widget .modal_button').data(this.widgetData).on('click', this.onToggleWidget.bind(this));
+    };
+    Modal.prototype.onEditCity = function(d) {
+        var city;
+        d.editing = !d.editing;
+        this.editBtn.classed('fa-pencil', !d.editing).classed('fa-check', d.editing);
+        if(d.editing) {
+            city = this.cityBlock.html();
+            this.cityBlock.html('<input type="text" value="'+city+'"/>');
+        }
+        else {
+            city = this.cityBlock.select('input').node().value;
+            this.cityBlock.html(city);
+            storage.setCity(city);
+            location.reload();
+        }
     };
     Modal.prototype.onToggleWidget = function(d) {
         d.active = !d.active;
@@ -30,8 +47,8 @@ define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.
         this.render();
     };
     Modal.prototype.mapWidgets = function() {
-        var active = storage.get();
-        return storage.getAll().map(function(widget) {
+        var active = storage.getWidgets();
+        return storage.getAllWidgets().map(function(widget) {
             return _.extend({
                 active: active.indexOf(widget.name) !== -1
             }, widget);

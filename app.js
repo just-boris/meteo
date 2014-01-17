@@ -10,10 +10,6 @@ requirejs.config({
         d3: { exports: 'd3' }
     }
 });
-define('localStorage', [], function() {
-    "use strict";
-    return window.localStorage;
-});
 define('Draggable', ['d3'], function(d3) {
     "use strict";
     function WidgetPlaceholder(container) {
@@ -110,40 +106,42 @@ define('app', ['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {
     Widget.prototype.remove = function() {
         this.element.remove();
     };
-    var API_URL = "http://api.openweathermap.org/data/2.5/forecast?q=Saint%20Petersburg&mode=json&units=metric",
+    var API_URL = "http://api.openweathermap.org/data/2.5/forecast?&mode=json&units=metric&q=",
         container = d3.select('.widgets'),
         drag = new Draggable(container),
-        widgetNames = storage.get(),
+        widgetNames = storage.getWidgets(),
         widgets = [],
         app = {};
     drag.on('dragend', function() {
-        storage.set(container.selectAll('.widget').data());
+        storage.setWidgets(container.selectAll('.widget').data());
     });
-    d3.json(API_URL, function(error, json) {
-        if (error) {
-            console.warn(error);
-            return;
-        }
-        function createWidget(name) {
-            require([name+'/widget'], function(Factory) {
-                widgets.push(new Widget(name, Factory, json));
-            });
-        }
-        app.createWidget = function(name) {
-            createWidget(name);
-            widgetNames.push(name);
-            storage.set(widgetNames);
-        };
-        app.removeWidget = function(name) {
-            var widget = widgets.filter(function(w) {
-                return w.name === name;
-            })[0];
-            widgets.splice(widgets.indexOf(widget), 1);
-            widget.remove();
-            widgetNames.splice(widgetNames.indexOf(name), 1);
-            storage.set(widgetNames);
-        };
-        widgetNames.forEach(createWidget);
+    storage.getCity(function(city) {
+        d3.json(API_URL+city, function(error, json) {
+            if (error) {
+                console.warn(error);
+                return;
+            }
+            function createWidget(name) {
+                require([name+'/widget'], function(Factory) {
+                    widgets.push(new Widget(name, Factory, json));
+                });
+            }
+            app.createWidget = function(name) {
+                createWidget(name);
+                widgetNames.push(name);
+                storage.setWidgets(widgetNames);
+            };
+            app.removeWidget = function(name) {
+                var widget = widgets.filter(function(w) {
+                    return w.name === name;
+                })[0];
+                widgets.splice(widgets.indexOf(widget), 1);
+                widget.remove();
+                widgetNames.splice(widgetNames.indexOf(name), 1);
+                storage.setWidgets(widgetNames);
+            };
+            widgetNames.forEach(createWidget);
+        });
     });
     return app;
 });

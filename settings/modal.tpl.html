@@ -1,4 +1,7 @@
-<h2>Current city: <%= city.name %> (<%= city.country %>)</h2>
+<h2>Current city:
+    <span class="modal_city"><%= city.name %></span>
+    <span class="modal_edit fa fa-pencil"></span>
+</h2>
 <h2>Available widgets:</h2>
 <% widgets.forEach(function(widget) { %>
 <div class="modal_widget">
