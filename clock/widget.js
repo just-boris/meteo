@@ -1,9 +1,11 @@
-define(['d3'], function(d3) {
-    function TimeNow(element) {
-        var now = new Date();
-        element.append('div').classed('time centered jumbotron', true).text(d3.time.format('%H:%M')(now));
-        element.append('h1').classed('date', true).text(d3.time.format('%a, %e %B %Y')(now));
-    }
-    TimeNow.className = 'clock';
-    return TimeNow;
+define(function() {
+    "use strict";
+    return {
+        template: '<h1 class="date">{{time | date:"EEE, d MMMM yyyy"}}</h1>' +
+            '<div class="time centered jumbotron">{{time | date:"HH:mm"}}</div>',
+        link: function(scope) {
+            scope.time = new Date();
+        },
+        className: 'clock'
+    };
 });

@@ -1,9 +1,9 @@
-define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(d3, Util, _, template) {
-    function TemperaturePlot(element, data) {
+define(['d3', 'angular', 'text!temp-plot/widget.html'], function(d3, angular, template) {
+    "use strict";
+    function TemperaturePlot(element, data, DayInfo) {
         var self = this,
             opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 580, height: 300};
-        this.dayInfoTpl = _.template(template);
-        this.svg = element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
+        this.svg = d3.select(element).append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
         this.data = this.mapData(data);
@@ -27,18 +27,12 @@ define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(
             x: -tickInterval/2,
             width: tickInterval,
             height: 60
-        }).append('xhtml:body').attr('xmlns', "http://www.w3.org/1999/xhtml").html(function(d) {
-                var data = self.findDataByDate(d);
-                return self.dayInfoTpl(_.extend({}, data, {
-                    temp: Util.formatTemp(data.temp),
-                    time: d3.time.format('%H:%M')(d),
-                    date: d3.time.format('%_d %b')(d),
-                    cloudIcon: self.getWeatherIcon(data, d)
-                }))
-            });
+        }).append('xhtml:body').attr('xmlns', "http://www.w3.org/1999/xhtml").each(function(d) {
+            new DayInfo(this, d, self.findDataByDate(d));
+        });
         this.plot.selectAll('.x.axis .tick switch').append('text').text('fail');
         this.plot.selectAll('.x.axis .tick').append('title').text(function(d) {
-            return self.findDataByDate(d).weather.description
+            return self.findDataByDate(d).weather.description;
         });
 
         if(tempBounds[0]*tempBounds[1] < 0) {
@@ -71,11 +65,8 @@ define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(
                 weather: d.weather[0],
                 time: d.dt*1000,
                 temp: d.main.temp
-            }
+            };
         });
-    };
-    TemperaturePlot.prototype.getWeatherIcon = function(d, date) {
-        return Util.getCloudIcon(d.weather.id, date);
     };
     TemperaturePlot.prototype.findDataByDate = function(date) {
         var result;
@@ -88,18 +79,18 @@ define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(
     TemperaturePlot.prototype.colors = ['#ec1000', '#ffa59d', '#2b78d8'];
     TemperaturePlot.prototype.getColorStops = function(min, max) {
         if(max*min>0) {
-            return [this.getColor(max), this.getColor(min)]
+            return [this.getColor(max), this.getColor(min)];
         }
         else {
-            return [this.getColor(max), this.getColor(0), this.getColor(min)]
+            return [this.getColor(max), this.getColor(0), this.getColor(min)];
         }
     };
     TemperaturePlot.prototype.getColor = function(temp) {
         if(temp > 0) {
-            return d3.interpolateRgb(this.colors[0], this.colors[1])(temp/100)
+            return d3.interpolateRgb(this.colors[0], this.colors[1])(temp/100);
         }
         else {
-            return d3.interpolateRgb(this.colors[2], this.colors[1])(-temp/100)
+            return d3.interpolateRgb(this.colors[2], this.colors[1])(-temp/100);
         }
     };
     TemperaturePlot.prototype.createGradient = function(name, stops) {
@@ -117,6 +108,24 @@ define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(
                 .attr("stop-opacity", 1);
         });
     };
-    TemperaturePlot.className = 'plot';
-    return TemperaturePlot;
+    return {
+        className:'plot',
+        controller: function($scope, $compile, $element, weather) {
+            function DayInfo(element, time, data) {
+                element.innerHTML = this.template;
+                var scope = $scope.$new();
+                angular.extend(scope, {
+                    temp: data.temp,
+                    time: time,
+                    cloudIcon: weather.getCloudIcon(data.weather.id, data.time)
+                });
+                $compile(element)(scope);
+            }
+            DayInfo.prototype.template = template;
+
+            weather.load().then(function(data) {
+                $scope.plot = new TemperaturePlot($element[0], data, DayInfo);
+            });
+        }
+    };
 });

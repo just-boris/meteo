@@ -131,7 +131,7 @@ h1, h2, h3 {
 .modal_button {
     border: 1px solid #aaa;
     background: #d5d5d5;
-    min-width: 70px;
+    min-width: 100px;
 }
 .modal_button_active {
     background: #D33939;
@@ -139,7 +139,11 @@ h1, h2, h3 {
     color: #fff;
 }
 
-.modal_edit {
+.modal_city form {
+    display: inline;
+}
+
+.modal_city .fa {
     cursor: pointer;
 }
 

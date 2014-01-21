@@ -1,0 +1,16 @@
+<h1 class="city">{{city.name}} ({{city.country}})</h1>
+<div class="weather jumbotron">
+    <span class="temp">{{temp | temperature:0}}</span>
+    <span class="clouds {{cloudIcon}}"></span>
+</div>
+<div class="properties">
+    <div class="properties_col">
+        <p>{{description}}</p>
+        <p>Max: {{tempMax}}°C</p>
+        <p>Min: {{tempMin}}°C</p>
+    </div>
+    <div class="properties_col">
+        <p>Pressure: {{pressure | numberNoTrailing:2}} mm Hg</p>
+        <p>Humidity: {{humidity | numberNoTrailing:2}}%</p>
+    </div>
+</div>

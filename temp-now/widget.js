@@ -1,34 +1,21 @@
 /*global define */
-define(['d3', 'underscore', 'util', 'text!temp-now/widget.tpl.html'], function(d3, _, Util, template) {
+define(['app', 'weather', 'text!temp-now/widget.html'], function(app, weather, template) {
     "use strict";
-    function TempNow(element, data) {
-        data = this.mapData(data);
-        element.html(_.template(template)(_.extend({}, data, {
-            cloudIcon: Util.getCloudIcon(data.weather.id),
-            temp: Util.formatTemp(data.temp),
-            tempMax: Util.formatTemp(data.tempMax, 2),
-            tempMin: Util.formatTemp(data.tempMin, 2),
-            humidity:data.humidity,
-            pressure:data.pressure*3/4 /* hPa to mm Hg */
-        }, this.viewHelpers)));
-    }
-    TempNow.prototype.viewHelpers = {
-        formatNumber: function(number, decimals) {
-            var multiplier = Math.pow(10, decimals);
-            return Math.round(number*multiplier)/multiplier;
+    return {
+        className: 'now',
+        template: template,
+        controller: function($scope, weather) {
+            weather.load().then(function(response) {
+                var currentWeather = response.list[0];
+                $scope.cloudIcon = weather.getCloudIcon(currentWeather.weather[0].id, currentWeather.dt*1000);
+                $scope.temp = currentWeather.main.temp;
+                $scope.tempMax = currentWeather.main.temp_max;
+                $scope.tempMin = currentWeather.main.temp_min;
+                $scope.description = currentWeather.weather[0].description;
+                $scope.humidity = currentWeather.main.humidity;
+                $scope.pressure = currentWeather.main.pressure*3/4; // hPa to mm Hg
+                $scope.city = response.city;
+            });
         }
     };
-    TempNow.prototype.mapData = function(json) {
-        return {
-            city: json.city,
-            temp: json.list[0].main.temp,
-            tempMax: json.list[0].main.temp_max,
-            tempMin: json.list[0].main.temp_min,
-            humidity: json.list[0].main.humidity,
-            pressure: json.list[0].main.pressure,
-            weather: json.list[0].weather[0]
-        };
-    };
-    TempNow.className = 'now';
-    return TempNow;
 });

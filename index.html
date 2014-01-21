@@ -11,6 +11,8 @@
     <script data-main="app" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 </head>
 <body>
-    <div class="widgets"></div>
+    <div drag-container="widgets" class="widgets" ng-controller="AppCtrl">
+        <div draggable widget="{{widget}}" ng-repeat="widget in widgets"></div>
+    </div>
 </body>
 </html>
