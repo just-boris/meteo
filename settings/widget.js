@@ -20,8 +20,10 @@ define('Modal', ['angular', 'registry', 'weather', 'text!settings/modal.html'], 
             $scope.$parent.$broadcast('widgetsReorder', widgetsList);
         };
         var active = widgets.getActive();
-        $scope.widgets = widgets.getAll().map(function(widget) {
-            return angular.extend({active: active.indexOf(widget.name) !== -1}, widget);
+        widgets.getAll().then(function(response) {
+            $scope.widgets = response.map(function(widget) {
+                return angular.extend({active: active.indexOf(widget.name) !== -1}, widget);
+            });
         });
         city.get().then(function(response) {
             $scope.city = response;

@@ -30,19 +30,15 @@ define('app', ['angular', 'widget', 'widgetsStore', 'registry', 'draggable'], fu
 });
 define('widgetsStore', ['angular', 'storage'], function(angular, storage) {
     "use strict";
-    angular.module('meteoWidgetStore', ['localStorageModule']).factory('widgets', function($storage) {
+    angular.module('meteoWidgetStore', ['localStorageModule']).factory('widgets', function($http, $storage) {
         var store = $storage('widgets'),
-            allWidgets = [
-                {name: 'temp-now', title: 'Temperature now', description: 'Shows current weather and temperature'},
-                {name: 'temp-plot', title: 'Temperature forecast', description: 'Weather forecast for the next 3 days'},
-                {name: 'clock', title: 'Digital clock', description: 'Date and time now'}
-            ];
+            defaultWidgets = ['temp-now', 'temp-plot', 'clock', 'settings'];
         return {
             getAll: function() {
-                return allWidgets;
+                return $http.get('widgets.json').then(function(response) {return response.data;});
             },
             getActive: function() {
-                return store.getItem('list') || allWidgets.map(function(w) { return w.name; }).concat('settings');
+                return store.getItem('list') || defaultWidgets;
             },
             setActive: function(list) {
                 store.setItem('list', list);
