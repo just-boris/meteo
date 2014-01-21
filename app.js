@@ -21,6 +21,10 @@ define('app', ['angular', 'widget', 'widgetsStore', 'registry', 'draggable'], fu
         })
         .controller('AppCtrl', function($scope, widgets) {
         $scope.widgets = widgets.getActive();
+        $scope.$on('widgetClose', function(event, widgetName) {
+            $scope.widgets.splice($scope.widgets.indexOf(widgetName), 1);
+            widgets.setActive($scope.widgets);
+        });
         $scope.$on('widgetsReorder', function(event, widgetList) {
             $scope.widgets = widgetList;
             widgets.setActive(widgetList);
@@ -118,6 +122,9 @@ define('widget', ['angular', 'registry', 'd3'], function(angular, registry, d3) 
                     var body = elm.append(name).classed('widget_body', true).node();
                     $compile(body)(scope);
                 });
+                scope.closeWidget = function() {
+                    scope.$emit('widgetClose', name);
+                };
             }
         };
     });
