@@ -1,5 +1,5 @@
 /*global define */
-define(['app', 'weather', 'text!temp-now/widget.html'], function(app, weather, template) {
+define(['weather', 'text!temp-now/widget.html'], function(weather, template) {
     "use strict";
     return {
         className: 'now',

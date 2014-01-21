@@ -1,131 +1,116 @@
-/*global requirejs, require, define */
+/*global requirejs, require, angular, d3 */
 requirejs.config({
     paths: {
-        angular: '//ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular',
-        storage: 'vendor/storageprovider',
-        d3: '//cdnjs.cloudflare.com/ajax/libs/d3/3.3.13/d3.min',
-        underscore: '//yandex.st/underscore/1.5.2/underscore-min',
         text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text'
-    },
-    shim: {
-        angular: {exports: 'angular'},
-        underscore: { exports: '_' },
-        d3: { exports: 'd3' }
     }
 });
-define('app', ['angular', 'widget', 'widgetsStore', 'registry', 'draggable'], function(angular, storage, registry, draggable) {
+angular.module('meteoApp', ['meteoWidget', 'meteoWidgetStore', 'meteoDraggable', 'meteoRegistry'])
+.config(function ($httpProvider) {
     "use strict";
-    angular.module('meteoApp', ['meteoWidget', 'meteoWidgetStore', 'meteoDraggable', 'meteoRegistry'])
-        .config(function($httpProvider) {
-            $httpProvider.defaults.cache = true;
-        })
-        .controller('AppCtrl', function($scope, widgets) {
-        $scope.widgets = widgets.getActive();
-        $scope.$on('widgetClose', function(event, widgetName) {
-            $scope.widgets.splice($scope.widgets.indexOf(widgetName), 1);
-            widgets.setActive($scope.widgets);
-        });
-        $scope.$on('widgetsReorder', function(event, widgetList) {
-            $scope.widgets = widgetList;
-            widgets.setActive(widgetList);
-        });
+    $httpProvider.defaults.cache = true;
+})
+.controller('AppCtrl', function ($scope, widgets) {
+    "use strict";
+    $scope.widgets = widgets.getActive();
+    $scope.$on('widgetClose', function (event, widgetName) {
+        $scope.widgets.splice($scope.widgets.indexOf(widgetName), 1);
+        widgets.setActive($scope.widgets);
     });
-    angular.bootstrap(document.body, ['meteoApp']);
-});
-define('widgetsStore', ['angular', 'storage'], function(angular, storage) {
-    "use strict";
-    angular.module('meteoWidgetStore', ['localStorageModule']).factory('widgets', function($http, $storage) {
-        var store = $storage('widgets'),
-            defaultWidgets = ['temp-now', 'temp-plot', 'clock', 'settings'];
-        return {
-            getAll: function() {
-                return $http.get('widgets.json').then(function(response) {return response.data;});
-            },
-            getActive: function() {
-                return store.getItem('list') || defaultWidgets;
-            },
-            setActive: function(list) {
-                store.setItem('list', list);
-            }
-        };
+    $scope.$on('widgetsReorder', function (event, widgetList) {
+        $scope.widgets = widgetList;
+        widgets.setActive(widgetList);
     });
 });
-define('registry', ['angular'], function(angular) {
+angular.module('meteoWidgetStore', ['localStorageModule']).factory('widgets', function ($http, $storage) {
     "use strict";
-    var $compileProvider, $controllerProvider, $filterProvider, $provide;
-    angular.module('meteoRegistry', []).config(function(_$compileProvider_, _$controllerProvider_, _$filterProvider_, _$provide_) {
-        $controllerProvider = _$controllerProvider_;
-        $compileProvider = _$compileProvider_;
-        $filterProvider = _$filterProvider_;
-        $provide = _$provide_;
-    });
+    var store = $storage('widgets'),
+        defaultWidgets = ['temp-now', 'temp-plot', 'clock', 'settings'];
     return {
-        directive: function() {
-            $compileProvider.directive.apply($compileProvider, arguments);
-            return this;
+        getAll: function () {
+            return $http.get('widgets.json').then(function (response) {
+                return response.data;
+            });
         },
-        value: function() {
-            $provide.value.apply($provide, arguments);
-            return this;
+        getActive: function () {
+            return store.getItem('list') || defaultWidgets;
         },
-        factory: function() {
-            $provide.factory.apply($provide, arguments);
-            return this;
-        },
-        controller: function() {
-            $controllerProvider.register.apply($controllerProvider, arguments);
-            return this;
-        },
-        filter: function() {
-            $filterProvider.register.apply($filterProvider, arguments);
-            return this;
+        setActive: function (list) {
+            store.setItem('list', list);
         }
     };
 });
-define('widget', ['angular', 'registry', 'd3'], function(angular, registry, d3) {
+angular.module('meteoRegistry', []).provider('registry', function ($compileProvider, $controllerProvider, $filterProvider, $provide) {
     "use strict";
-    angular.module('meteoWidget', []).directive('widget', function($compile, $rootScope) {
-        var loadedWidgets = {};
-        function loadWidget(name, callback) {
-            if(!loadedWidgets[name]) {
-                require([name+'/widget'], function(Factory) {
-                    registry.directive(name.replace(/-(.)/g, function($0, $1) {return $1.toUpperCase();}), function() {
-                        if(angular.isFunction(Factory)) {
-                            Factory = {link: Factory};
-                        }
-                        return angular.extend(Factory, {restrict: 'E'});
-                    });
-                    loadedWidgets[name] = Factory;
-                    callback(Factory);
-                    $rootScope.$apply();
-                });
-            }
-            else {
-                callback(loadedWidgets[name]);
-            }
-        }
-        return {
-            replace: true,
-            template: '<div class="widget">' +
-                '<div class="widget_close fa fa-times" ng-click="closeWidget()"></div>'+
-                '</div>',
-            scope: {},
-            link: function(scope, elm, attrs) {
-                elm = d3.select(elm[0]);
-                var name = attrs.widget;
-                elm.data([name]);
-                loadWidget(name, function(Factory) {
-                    var widgetCls = Factory.className;
-                    if(widgetCls) {
-                        elm.classed(widgetCls, true);
-                    }
-                    var body = elm.append(name).classed('widget_body', true).node();
-                    $compile(body)(scope);
-                });
-                scope.closeWidget = function() {
-                    scope.$emit('widgetClose', name);
-                };
+    this.$get = function ($window) {
+        $window.registry = {
+            directive: function () {
+                $compileProvider.directive.apply($compileProvider, arguments);
+                return this;
+            },
+            value: function () {
+                $provide.value.apply($provide, arguments);
+                return this;
+            },
+            factory: function () {
+                $provide.factory.apply($provide, arguments);
+                return this;
+            },
+            controller: function () {
+                $controllerProvider.register.apply($controllerProvider, arguments);
+                return this;
+            },
+            filter: function () {
+                $filterProvider.register.apply($filterProvider, arguments);
+                return this;
             }
         };
-    });
+        return $window.registry;
+    };
+});
+angular.module('meteoWidget', []).directive('widget', function ($compile, $rootScope, registry) {
+    "use strict";
+    var loadedWidgets = {};
+    function loadWidget(name, callback) {
+        if (!loadedWidgets[name]) {
+            require([name + '/widget'], function (Factory) {
+                registry.directive(name.replace(/-(.)/g, function ($0, $1) {
+                    return $1.toUpperCase();
+                }), function () {
+                    if (angular.isFunction(Factory)) {
+                        Factory = {link: Factory};
+                    }
+                    return angular.extend(Factory, {restrict: 'E'});
+                });
+                loadedWidgets[name] = Factory;
+                callback(Factory);
+                $rootScope.$apply();
+            });
+        }
+        else {
+            callback(loadedWidgets[name]);
+        }
+    }
+    return {
+        replace: true,
+        template: '<div class="widget">' +
+            '<div class="widget_close fa fa-times" ng-click="closeWidget()"></div>'+
+            '</div>',
+        scope: {},
+        link: function (scope, elm, attrs) {
+            elm = d3.select(elm[0]);
+            var name = attrs.widget;
+            elm.data([name]);
+            loadWidget(name, function (Factory) {
+                var widgetCls = Factory.className;
+                if (widgetCls) {
+                    elm.classed(widgetCls, true);
+                }
+                var body = elm.append(name).classed('widget_body', true).node();
+                $compile(body)(scope);
+            });
+            scope.closeWidget = function () {
+                scope.$emit('widgetClose', name);
+            };
+        }
+    };
 });

@@ -1,4 +1,4 @@
-define(['d3', 'angular', 'text!temp-plot/widget.html'], function(d3, angular, template) {
+define(['text!temp-plot/widget.html'], function(template) {
     "use strict";
     function TemperaturePlot(element, data, DayInfo) {
         var self = this,

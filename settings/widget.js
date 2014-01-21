@@ -1,5 +1,5 @@
-/*global define, require*/
-define('Modal', ['angular', 'registry', 'weather', 'text!settings/modal.html'], function(angular, registry, weather, template) {
+/*global define, require, registry */
+define('Modal', ['weather', 'text!settings/modal.html'], function(weather, template) {
     "use strict";
     registry.controller('ModalController', function($scope, $http, city, widgets) {
         $scope.setEditing = function(editing) {

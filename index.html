@@ -8,9 +8,15 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="weather-icons/weather-icons.css">
     <link rel="stylesheet" href="styles.css">
-    <script data-main="app" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.9/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.13/d3.min.js"></script>
+    <script src="vendor/storageprovider.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+    <script src="app.js"></script>
+    <script src="draggable.js"></script>
+
 </head>
-<body>
+<body ng-app="meteoApp">
     <div drag-container="widgets" class="widgets" ng-controller="AppCtrl">
         <div draggable widget="{{widget}}" ng-repeat="widget in widgets"></div>
     </div>

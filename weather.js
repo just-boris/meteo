@@ -1,5 +1,5 @@
-/*global define*/
-define(['registry', 'storage'], function(registry, storage) {
+/*global define, registry */
+define(function() {
     "use strict";
     return registry
         .value('geolocation', navigator.geolocation)
