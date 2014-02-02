@@ -89,21 +89,20 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
         //noinspection JSUnusedAssignment
         return result;
     };
-    TemperaturePlot.prototype.colors = ['#ec1000', '#ffa59d', '#2b78d8'];
+    TemperaturePlot.prototype.colors = ['#ec1000', '#c8a2ce', '#2b78d8'];
     TemperaturePlot.prototype.getColorStops = function(min, max) {
-        if(max*min>0) {
-            return [this.getColor(max), this.getColor(min)]
+        var stops = {0: this.getColor(max), 100: this.getColor(min)};
+        if(max*min<0) {
+            stops[(max*100)/(max-min)] = this.getColor(0)
         }
-        else {
-            return [this.getColor(max), this.getColor(0), this.getColor(min)]
-        }
+        return stops;
     };
     TemperaturePlot.prototype.getColor = function(temp) {
         if(temp > 0) {
             return d3.interpolateRgb(this.colors[0], this.colors[1])(temp/100)
         }
         else {
-            return d3.interpolateRgb(this.colors[2], this.colors[1])(-temp/100)
+            return d3.interpolateRgb(this.colors[1], this.colors[2])(-temp/100)
         }
     };
     TemperaturePlot.prototype.createGradient = function(name, stops) {
@@ -114,10 +113,12 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
             .attr("x2", "0%")
             .attr("y2", "100%")
             .attr("spreadMethod", "pad");
-        stops.forEach(function(stop, index) {
+        _.chain(stops).keys().sortBy(function(offset) {
+            return parseFloat(offset);
+        }).each(function(offset) {
             gradient.append("svg:stop")
-                .attr("offset", (index/(stops.length-1)*100)+"%")
-                .attr("stop-color", stop)
+                .attr("offset", offset+"%")
+                .attr("stop-color", stops[offset])
                 .attr("stop-opacity", 1);
         });
     };
