@@ -1,9 +1,13 @@
-define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(d3, Util, _, template) {
-    function TemperaturePlot(element, data) {
+define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(d3, weather, Util, _, template) {
+    function TemperaturePlot(element) {
+        weather.then(this.onLoad.bind(this));
+        this.element = element;
+    }
+    TemperaturePlot.prototype.onLoad = function(data) {
         var self = this,
             opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 580, height: 300};
         this.dayInfoTpl = _.template(template);
-        this.svg = element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
+        this.svg = this.element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
         this.data = this.mapData(data);
@@ -64,7 +68,7 @@ define(['d3', 'util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(
             return y(d.temp);
         });
         path.transition().duration(1000).attr('d', line);
-    }
+    };
     TemperaturePlot.prototype.mapData = function(rawData) {
         return rawData.list.map(function(d) {
             return {

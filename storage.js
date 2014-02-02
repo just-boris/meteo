@@ -7,13 +7,9 @@ define('geolocation', [], function() {
     "use strict";
     return navigator.geolocation;
 });
-define(['d3', 'geolocation', 'localStorage'], function(d3, geolocation, storage) {
+define(['jQuery', 'geolocation', 'localStorage', 'json!widgets.json'], function($, geolocation, storage, widgets) {
     "use strict";
-    var allWidgets = [
-        {name: 'temp-now', title: 'Temperature now', description: 'Shows current weather and temperature'},
-        {name: 'temp-plot', title: 'Temperature forecast', description: 'Weather forecast for the next 3 days'},
-        {name: 'clock', title: 'Digital clock', description: 'Date and time now'}
-    ];
+    var allWidgets = widgets;
     return {
         getAllWidgets: function() {
             return allWidgets;
@@ -34,11 +30,7 @@ define(['d3', 'geolocation', 'localStorage'], function(d3, geolocation, storage)
             } else {
                 navigator.geolocation.getCurrentPosition(function (response) {
                     var coords = [response.coords.longitude, response.coords.latitude].join(',');
-                    d3.json('http://geocode-maps.yandex.ru/1.x/?lang=en-US&results=1&format=json&kind=locality&geocode=' + coords, function (error, json) {
-                        if (error) {
-                            console.warn(error);
-                            return;
-                        }
+                    jQuery.getJSON('http://geocode-maps.yandex.ru/1.x/?lang=en-US&results=1&format=json&kind=locality&geocode=' + coords, function (json) {
                         callback(json.response.GeoObjectCollection.featureMember[0].GeoObject.name);
                     });
                 }, function (error) {

@@ -3,9 +3,12 @@ requirejs.config({
     paths: {
         d3: '//cdnjs.cloudflare.com/ajax/libs/d3/3.3.13/d3.min',
         underscore: '//yandex.st/underscore/1.5.2/underscore-min',
-        text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text'
+        jQuery: 'http://yandex.st/jquery/2.1.0/jquery.min',
+        text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text',
+        json: 'vendor/require-json'
     },
     shim: {
+        jQuery: {exports: 'jQuery'},
         underscore: { exports: '_' },
         d3: { exports: 'd3' }
     }
@@ -91,59 +94,53 @@ define('Draggable', ['d3'], function(d3) {
 });
 define('app', ['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {
     "use strict";
-    function Widget(name, json) {
+    function Widget(container, name) {
         require([name+'/widget'], this.onLoad.bind(this));
         this.name = name;
-        this.json = json;
         this.element = container.append('div').classed('widget', true);
         this.element.data([name]);
         this.element.append('div').classed('widget_close fa fa-times', true).on('click', this.remove.bind(this));
-        this.element.call(drag);
     }
     Widget.prototype.onLoad = function(Factory) {
         var widgetCls = Factory.className;
         if(widgetCls) {
             this.element.classed(widgetCls, true);
         }
-        new Factory(this.element.append('div').classed('widget_body', true), this.json);
+        new Factory(this.element.append('div').classed('widget_body', true));
     };
     Widget.prototype.remove = function() {
         this.element.remove();
     };
-    var API_URL = "http://api.openweathermap.org/data/2.5/forecast?&mode=json&units=metric&q=",
-        container = d3.select('.widgets'),
-        drag = new Draggable(container),
-        widgetNames = storage.getWidgets(),
-        widgets = [],
-        app = {};
-    drag.on('dragend', function() {
-        storage.setWidgets(container.selectAll('.widget').data());
-    });
-    storage.getCity(function(city) {
-        d3.json(API_URL+city, function(error, json) {
-            if (error) {
-                console.warn(error);
-                return;
-            }
-            function createWidget(name) {
-                widgets.push(new Widget(name, json));
-            }
-            app.createWidget = function(name) {
-                createWidget(name);
-                widgetNames.push(name);
-                storage.setWidgets(widgetNames);
-            };
-            app.removeWidget = function(name) {
-                var widget = widgets.filter(function(w) {
-                    return w.name === name;
-                })[0];
-                widgets.splice(widgets.indexOf(widget), 1);
-                widget.remove();
-                widgetNames.splice(widgetNames.indexOf(name), 1);
-                storage.setWidgets(widgetNames);
-            };
-            widgetNames.forEach(createWidget);
-        });
-    });
-    return app;
+    function App(selector) {
+        this.container = d3.select(selector);
+        this.drag = new Draggable(this.container);
+        this.drag.on('dragend', this.onMoveWidgets.bind(this));
+        this.widgetNames = storage.getWidgets();
+        this.widgets = this.widgetNames.map(function(name) {
+            return this.createWidget(name);
+        }, this)
+    }
+    App.prototype.onMoveWidgets = function() {
+        storage.setWidgets(this.container.selectAll('.widget').data());
+    };
+    App.prototype.createWidget = function(name) {
+        var widget = new Widget(this.container, name);
+        widget.element.call(this.drag);
+        return widget;
+    };
+    App.prototype.addWidget = function(name) {
+        this.createWidget(name);
+        this.widgetNames.push(name);
+        storage.setWidgets(widgetNames);
+    };
+    App.prototype.removeWidget = function(name) {
+        var widget = this.widgets.filter(function(w) {
+            return w.name === name;
+        })[0];
+        this.widgets.splice(this.widgets.indexOf(widget), 1);
+        widget.remove();
+        this.widgetNames.splice(this.widgetNames.indexOf(name), 1);
+        storage.setWidgets(this.widgetNames);
+    };
+    return App;
 });

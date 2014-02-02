@@ -39,7 +39,7 @@ define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.
     Modal.prototype.onToggleWidget = function(d) {
         d.active = !d.active;
         if(d.active) {
-            app.createWidget(d.name);
+            app.addWidget(d.name);
         }
         else {
             app.removeWidget(d.name);
@@ -60,12 +60,16 @@ define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.
     };
     return Modal;
 });
-define(['d3', 'underscore', 'Modal', 'text!settings/widget.tpl.html'], function(d3, _, Modal, template) {
+define(['d3', 'underscore', 'text!settings/widget.tpl.html'], function(d3, _, template) {
     "use strict";
-    function SettingsBtn(element, json) {
+    function SettingsBtn(element) {
         element.html(_.template(template, {}));
         element.on('click', function() {
-            new Modal(json);
+            require(['Modal', 'weather'], function(Modal, weather) {
+                weather.then(function(data) {
+                    new Modal(data);
+                });
+            });
         });
     }
     SettingsBtn.className = 'add_more';
