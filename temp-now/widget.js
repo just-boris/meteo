@@ -1,5 +1,5 @@
 /*global define */
-define(['d3', 'underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather'], function(d3, _, template, Util, weather) {
+define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather'], function(_, template, Util, weather) {
     "use strict";
     function TempNow(element) {
         weather.then(this.onLoad.bind(this));

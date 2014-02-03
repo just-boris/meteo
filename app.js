@@ -92,46 +92,56 @@ define('Draggable', ['d3'], function(d3) {
         return drag;
     };
 });
-define('app', ['d3', 'storage', 'Draggable'], function(d3, storage, Draggable) {
+define('app', ['d3', 'jQuery', 'storage', 'Draggable'], function(d3, $, storage, Draggable) {
     "use strict";
     function Widget(container, name) {
         require([name+'/widget'], this.onLoad.bind(this));
         this.name = name;
-        this.element = container.append('div').classed('widget', true);
-        this.element.data([name]);
-        this.element.append('div').classed('widget_close fa fa-times', true).on('click', this.remove.bind(this));
+        this.element = $('<div></div>').appendTo(container).addClass('widget');
+        this.element.data('name', name);
+        $('<div>').appendTo(this.element).addClass('widget_close fa fa-times').on('click', this.remove.bind(this));
     }
     Widget.prototype.onLoad = function(Factory) {
         var widgetCls = Factory.className;
         if(widgetCls) {
-            this.element.classed(widgetCls, true);
+            this.element.addClass(widgetCls);
         }
-        new Factory(this.element.append('div').classed('widget_body', true));
+        this.body = $('<div>').appendTo(this.element).addClass('widget_body');
+        return new Factory(this.body);
     };
     Widget.prototype.remove = function() {
         this.element.remove();
     };
     function App(selector) {
-        this.container = d3.select(selector);
-        this.drag = new Draggable(this.container);
+        this.container = $(selector).first();
+        this.drag = new Draggable(d3.select(this.container[0]));
         this.drag.on('dragend', this.onMoveWidgets.bind(this));
         this.widgetNames = storage.getWidgets();
         this.widgets = this.widgetNames.map(function(name) {
             return this.createWidget(name);
-        }, this)
+        }, this);
+        window.setInterval(this.updateWidgets.bind(this), this.updateInterval);
     }
+    App.prototype.updateInterval = 5000;
     App.prototype.onMoveWidgets = function() {
-        storage.setWidgets(this.container.selectAll('.widget').data());
+        storage.setWidgets(this.container.find('.widget').map(function(i, el) {
+            return $(el).data('name');
+        }).toArray());
+    };
+    App.prototype.updateWidgets = function() {
+        this.widgets.forEach(function(widget) {
+            widget.body.trigger('update');
+        });
     };
     App.prototype.createWidget = function(name) {
         var widget = new Widget(this.container, name);
-        widget.element.call(this.drag);
+        d3.select(widget.element[0]).call(this.drag);
         return widget;
     };
     App.prototype.addWidget = function(name) {
         this.createWidget(name);
         this.widgetNames.push(name);
-        storage.setWidgets(widgetNames);
+        storage.setWidgets(this.widgetNames);
     };
     App.prototype.removeWidget = function(name) {
         var widget = this.widgets.filter(function(w) {

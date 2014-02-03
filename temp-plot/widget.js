@@ -1,7 +1,7 @@
 define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(d3, weather, Util, _, template) {
     function TemperaturePlot(element) {
         weather.then(this.onLoad.bind(this));
-        this.element = element;
+        this.element = d3.select(element[0]);
     }
     TemperaturePlot.prototype.onLoad = function(data) {
         var self = this,
@@ -89,20 +89,21 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
         //noinspection JSUnusedAssignment
         return result;
     };
-    TemperaturePlot.prototype.colors = ['#ec1000', '#c8a2ce', '#2b78d8'];
     TemperaturePlot.prototype.getColorStops = function(min, max) {
         var stops = {0: this.getColor(max), 100: this.getColor(min)};
         if(max*min<0) {
-            stops[(max*100)/(max-min)] = this.getColor(0)
+            var zeroOffset = (max*100)/(max-min);
+            stops[zeroOffset-10] = '#c8a2ce';
+            stops[zeroOffset+10] = '#6bcbe6';
         }
         return stops;
     };
     TemperaturePlot.prototype.getColor = function(temp) {
         if(temp > 0) {
-            return d3.interpolateRgb(this.colors[0], this.colors[1])(temp/100)
+            return d3.interpolateRgb('#c8a2ce', '#ec1000')(temp/30)
         }
         else {
-            return d3.interpolateRgb(this.colors[1], this.colors[2])(-temp/100)
+            return d3.interpolateRgb('#6bcbe6', '#2b78d8')(-temp/30)
         }
     };
     TemperaturePlot.prototype.createGradient = function(name, stops) {

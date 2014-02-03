@@ -60,7 +60,7 @@ define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.
     };
     return Modal;
 });
-define(['d3', 'underscore', 'text!settings/widget.tpl.html'], function(d3, _, template) {
+define(['underscore', 'text!settings/widget.tpl.html'], function(_, template) {
     "use strict";
     function SettingsBtn(element) {
         element.html(_.template(template, {}));
