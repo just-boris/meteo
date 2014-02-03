@@ -1,4 +1,6 @@
+/*global define*/
 define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(d3, weather, Util, _, template) {
+    "use strict";
     function TemperaturePlot(element) {
         weather.then(this.onLoad.bind(this));
         this.element = d3.select(element[0]);
@@ -38,11 +40,11 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
                     time: d3.time.format('%H:%M')(d),
                     date: d3.time.format('%_d %b')(d),
                     cloudIcon: self.getWeatherIcon(data, d)
-                }))
+                }));
             });
         this.plot.selectAll('.x.axis .tick switch').append('text').text('fail');
         this.plot.selectAll('.x.axis .tick').append('title').text(function(d) {
-            return self.findDataByDate(d).weather.description
+            return self.findDataByDate(d).weather.description;
         });
 
         if(tempBounds[0]*tempBounds[1] < 0) {
@@ -75,7 +77,7 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
                 weather: d.weather[0],
                 time: d.dt*1000,
                 temp: d.main.temp
-            }
+            };
         });
     };
     TemperaturePlot.prototype.getWeatherIcon = function(d, date) {
@@ -100,10 +102,10 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
     };
     TemperaturePlot.prototype.getColor = function(temp) {
         if(temp > 0) {
-            return d3.interpolateRgb('#c8a2ce', '#ec1000')(temp/30)
+            return d3.interpolateRgb('#c8a2ce', '#ec1000')(temp/30);
         }
         else {
-            return d3.interpolateRgb('#6bcbe6', '#2b78d8')(-temp/30)
+            return d3.interpolateRgb('#6bcbe6', '#2b78d8')(-temp/30);
         }
     };
     TemperaturePlot.prototype.createGradient = function(name, stops) {

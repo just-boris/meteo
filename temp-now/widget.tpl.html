@@ -1,13 +1,13 @@
 <h1 class="city"><%= city.name %> (<%= city.country %>)</h1>
 <div class="weather jumbotron">
-    <span class="temp"><%= temp %></span>
+    <span class="temp"><%= formatTemp(temp) %></span>
     <span class="clouds <%= cloudIcon %>"></span>
 </div>
 <div class="properties">
     <div class="properties_col">
         <p><%= weather.description %></p>
-        <p>Max: <%= tempMax %>°C</p>
-        <p>Min: <%= tempMin %>°C</p>
+        <p>Max: <%= formatTemp(tempMax, 2) %>°C</p>
+        <p>Min: <%= formatTemp(tempMin, 2) %>°C</p>
     </div>
     <div class="properties_col">
         <p>Pressure: <%= formatNumber(pressure, 2) %> mm Hg</p>

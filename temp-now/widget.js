@@ -3,24 +3,18 @@ define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather
     "use strict";
     function TempNow(element) {
         weather.then(this.onLoad.bind(this));
-        this.element = element
+        this.element = element;
     }
     TempNow.prototype.onLoad = function(data) {
         data = this.mapData(data);
         this.element.html(_.template(template)(_.extend({}, data, {
             cloudIcon: Util.getCloudIcon(data.weather.id),
-            temp: Util.formatTemp(data.temp),
-            tempMax: Util.formatTemp(data.tempMax, 2),
-            tempMin: Util.formatTemp(data.tempMin, 2),
+            temp: data.temp,
+            tempMax: data.tempMax,
+            tempMin: data.tempMin,
             humidity:data.humidity,
             pressure:data.pressure*3/4 /* hPa to mm Hg */
-        }, this.viewHelpers)));
-    };
-    TempNow.prototype.viewHelpers = {
-        formatNumber: function(number, decimals) {
-            var multiplier = Math.pow(10, decimals);
-            return Math.round(number*multiplier)/multiplier;
-        }
+        }, Util)));
     };
     TempNow.prototype.mapData = function(json) {
         return {
