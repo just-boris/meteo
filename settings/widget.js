@@ -1,7 +1,8 @@
 /*global define, require*/
-define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.html'], function(d3, _, storage, app, template) {
+define('Modal', ['d3', 'underscore', 'storage', 'text!settings/modal.tpl.html'], function(d3, _, storage, template) {
     "use strict";
-    function Modal(data) {
+    function Modal(container, data) {
+        this.container = container;
         this.backdrop = d3.select('body').append('div').classed('modal_backdrop', true);
         this.backdrop.on('click', this.close.bind(this));
         this.modal = d3.select('body').append('div').classed('modal', true);
@@ -38,12 +39,7 @@ define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.
     };
     Modal.prototype.onToggleWidget = function(d) {
         d.active = !d.active;
-        if(d.active) {
-            app.addWidget(d.name);
-        }
-        else {
-            app.removeWidget(d.name);
-        }
+        this.container.trigger(d.active ? 'addWidget' : 'removeWidget', d.name);
         this.render();
     };
     Modal.prototype.mapWidgets = function() {
@@ -63,11 +59,12 @@ define('Modal', ['d3', 'underscore', 'storage', 'app', 'text!settings/modal.tpl.
 define(['underscore', 'text!settings/widget.tpl.html'], function(_, template) {
     "use strict";
     function SettingsBtn(element) {
+        var container = element.parent('.widget').parent();
         element.html(_.template(template, {}));
         element.on('click', function() {
             require(['Modal', 'weather'], function(Modal, weather) {
                 weather.then(function(data) {
-                    new Modal(data);
+                    new Modal(container, data);
                 });
             });
         });

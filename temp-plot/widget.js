@@ -2,8 +2,8 @@
 define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tpl.html'], function(d3, weather, Util, _, template) {
     "use strict";
     function TemperaturePlot(element) {
-        weather.then(this.onLoad.bind(this));
         this.element = d3.select(element[0]);
+        weather.then(this.onLoad.bind(this));
     }
     TemperaturePlot.prototype.onLoad = function(data) {
         var self = this,
