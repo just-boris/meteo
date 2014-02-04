@@ -1,9 +1,11 @@
-define(['d3'], function(d3) {
+/*global define*/
+define(['d3', 'jQuery'], function(d3, $) {
+    "use strict";
     function TimeNow(element) {
         this.time = $('<div>').appendTo(element).addClass('time centered jumbotron');
-        this.date = $('<div>').appendTo(element).addClass('date');
+        this.date = $('<h1>').appendTo(element).addClass('date');
         this.updateTime();
-        element.on('update', this.updateTime.bind(this))
+        element.on('update', this.updateTime.bind(this));
     }
     TimeNow.prototype.updateTime = function() {
         var now = new Date();
