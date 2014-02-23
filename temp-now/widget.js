@@ -1,10 +1,26 @@
 /*global define */
-define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather'], function(_, template, Util, weather) {
+define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather', 'storage'], function(_, template, Util, weather, storage) {
     "use strict";
     function TempNow(element) {
         weather.then(this.onLoad.bind(this));
         this.element = element;
     }
+    TempNow.prototype.onEditCity = function() {
+        var editing = !this.editBtn.data('editing'),
+            city;
+        this.editBtn.data('editing', editing);
+        this.editBtn.toggleClass('fa-pencil', !editing).toggleClass('fa-check', editing);
+        if(editing) {
+            city = this.cityBlock.html();
+            this.cityBlock.html('<input type="text" value="'+city+'"/>');
+        }
+        else {
+            city = this.cityBlock.find('input').val();
+            this.cityBlock.html(city);
+            storage.setCity(city);
+            location.reload();
+        }
+    };
     TempNow.prototype.onLoad = function(data) {
         data = this.mapData(data);
         this.element.html(_.template(template)(_.extend({}, data, {
@@ -15,6 +31,8 @@ define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather
             humidity:data.humidity,
             pressure:data.pressure*3/4 /* hPa to mm Hg */
         }, Util)));
+        this.cityBlock = this.element.find('.city_name');
+        this.editBtn = this.element.find('.city_edit').data('editing', false).on('click', this.onEditCity.bind(this));
     };
     TempNow.prototype.mapData = function(json) {
         return {

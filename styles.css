@@ -139,10 +139,6 @@ h1, h2, h3 {
     color: #fff;
 }
 
-.modal_edit {
-    cursor: pointer;
-}
-
 .plot {
     text-align: center;
 }
@@ -190,6 +186,10 @@ h1, h2, h3 {
 
 .now .properties_col:first-letter{
     text-transform: capitalize
+}
+
+.now .city_edit {
+    cursor: pointer;
 }
 
 .add_more {

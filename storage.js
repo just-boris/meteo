@@ -30,7 +30,7 @@ define(['jQuery', 'geolocation', 'localStorage', 'json!widgets.json'], function(
             } else {
                 navigator.geolocation.getCurrentPosition(function (response) {
                     var coords = [response.coords.longitude, response.coords.latitude].join(',');
-                    jQuery.getJSON('http://geocode-maps.yandex.ru/1.x/?lang=en-US&results=1&format=json&kind=locality&geocode=' + coords, function (json) {
+                    $.getJSON('http://geocode-maps.yandex.ru/1.x/?lang=en-US&results=1&format=json&kind=locality&geocode=' + coords, function (json) {
                         callback(json.response.GeoObjectCollection.featureMember[0].GeoObject.name);
                     });
                 }, function (error) {

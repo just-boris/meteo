@@ -1,4 +1,7 @@
-<h1 class="city"><%= city.name %> (<%= city.country %>)</h1>
+<h1 class="city">
+    <span class="city_name"><%= city.name %></span>
+    <small class="city_edit fa fa-pencil"></small>
+</h1>
 <div class="weather jumbotron">
     <span class="temp"><%= formatTemp(temp) %></span>
     <span class="clouds <%= cloudIcon %>"></span>
