@@ -3,12 +3,14 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
     "use strict";
     function TemperaturePlot(element) {
         this.element = d3.select(element[0]);
-        weather.then(this.onLoad.bind(this));
+        this.animateEnter = true;
+        weather.register(element, this.onLoad.bind(this));
     }
     TemperaturePlot.prototype.onLoad = function(data) {
         var self = this,
             opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 580, height: 300};
         this.dayInfoTpl = _.template(template);
+        this.element.html('');
         this.svg = this.element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
@@ -54,22 +56,25 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
             });    
         }
 
-        var line = d3.svg.line()
-            .x(function(d) {
-                return x(d.time);
-            })
-            .y(y(tempBounds[1]));
-
         this.createGradient('pathFill', this.getColorStops(tempBounds[0], tempBounds[1]));
-        var path = this.plot.append("path")
-            .datum(this.data)
-            .attr("class", "line").style('stroke', 'url(#pathFill)')
-            .attr("d", line);
+        var line = d3.svg.line()
+                .x(function(d) {
+                    return x(d.time);
+                })
+                .y(y(tempBounds[1])),
+            path = this.plot.append("path")
+                .datum(this.data)
+                .attr("class", "line").style('stroke', 'url(#pathFill)')
+                .attr("d", line);
 
         line.y(function(d) {
             return y(d.temp);
         });
-        path.transition().duration(1000).attr('d', line);
+        if(this.animateEnter) {
+            path = path.transition().duration(1000);
+            this.animateEnter = false;
+        }
+        path.attr('d', line);
     };
     TemperaturePlot.prototype.mapData = function(rawData) {
         return rawData.list.map(function(d) {

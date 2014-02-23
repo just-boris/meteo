@@ -190,6 +190,11 @@ h1, h2, h3 {
 
 .now .city_edit {
     cursor: pointer;
+    visibility: hidden;
+}
+
+.now:hover .city_edit {
+    visibility: visible;
 }
 
 .add_more {

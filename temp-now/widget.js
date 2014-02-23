@@ -2,7 +2,8 @@
 define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather', 'storage'], function(_, template, Util, weather, storage) {
     "use strict";
     function TempNow(element) {
-        weather.then(this.onLoad.bind(this));
+        weather.register(element, this.onLoad.bind(this));
+        element.on('update', this.onUpdate.bind(this));
         this.element = element;
     }
     TempNow.prototype.onEditCity = function() {
@@ -33,6 +34,9 @@ define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather
         }, Util)));
         this.cityBlock = this.element.find('.city_name');
         this.editBtn = this.element.find('.city_edit').data('editing', false).on('click', this.onEditCity.bind(this));
+    };
+    TempNow.prototype.onUpdate = function() {
+
     };
     TempNow.prototype.mapData = function(json) {
         return {
