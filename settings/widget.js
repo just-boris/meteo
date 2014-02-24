@@ -1,7 +1,7 @@
 /*global define, require*/
 define('Modal', ['d3', 'underscore', 'storage', 'text!settings/modal.tpl.html'], function(d3, _, storage, template) {
     "use strict";
-    function Modal(container, data) {
+    function Modal(container) {
         this.container = container;
         this.backdrop = d3.select('body').append('div').classed('modal_backdrop', true);
         this.backdrop.on('click', this.close.bind(this));
@@ -9,14 +9,12 @@ define('Modal', ['d3', 'underscore', 'storage', 'text!settings/modal.tpl.html'],
         setTimeout(function() {
             this.modal.classed('slide_in', true);
         }.bind(this), 10);
-        this.data = data;
         this.widgetData = this.mapWidgets();
         this.render();
     }
     Modal.prototype.render = function() {
         this.modal.html(_.template(template, {
-            widgets: this.widgetData,
-            city: this.data.city
+            widgets: this.widgetData
         }));
         this.modal.selectAll('.modal_widget .modal_button').data(this.widgetData).on('click', this.onToggleWidget.bind(this));
     };
@@ -45,10 +43,8 @@ define(['underscore', 'text!settings/widget.tpl.html'], function(_, template) {
         var container = element.parent('.widget').parent();
         element.html(_.template(template, {}));
         element.on('click', function() {
-            require(['Modal', 'weather'], function(Modal, weather) {
-                weather.then(function(data) {
-                    new Modal(container, data);
-                });
+            require(['Modal', 'weather'], function(Modal) {
+                  new Modal(container);
             });
         });
     }
