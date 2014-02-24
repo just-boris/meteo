@@ -44,7 +44,6 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
                     cloudIcon: self.getWeatherIcon(data, d)
                 }));
             });
-        this.plot.selectAll('.x.axis .tick switch').append('text').text('fail');
         this.plot.selectAll('.x.axis .tick').append('title').text(function(d) {
             return self.findDataByDate(d).weather.description;
         });

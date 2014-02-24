@@ -1,5 +1,5 @@
 /*global define */
-define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather', 'storage'], function(_, template, Util, weather, storage) {
+define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather', 'city'], function(_, template, Util, weather, city) {
     "use strict";
     function TempNow(element) {
         weather.register(element, this.onLoad.bind(this));
@@ -8,17 +8,17 @@ define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather
     }
     TempNow.prototype.onEditCity = function() {
         var editing = !this.editBtn.data('editing'),
-            city;
+            currentCity;
         this.editBtn.data('editing', editing);
         this.editBtn.toggleClass('fa-pencil', !editing).toggleClass('fa-check', editing);
         if(editing) {
-            city = this.cityBlock.html();
-            this.cityBlock.html('<input type="text" value="'+city+'"/>');
+            currentCity = this.cityBlock.html();
+            this.cityBlock.html('<input type="text" value="'+currentCity+'"/>');
         }
         else {
-            city = this.cityBlock.find('input').val();
-            this.cityBlock.html(city);
-            storage.setCity(city);
+            currentCity = this.cityBlock.find('input').val();
+            this.cityBlock.html(currentCity);
+            city.setCityName(currentCity);
             location.reload();
         }
     };

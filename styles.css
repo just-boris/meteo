@@ -164,6 +164,11 @@ h1, h2, h3 {
     text-align: center;
 }
 
+.sun-graph .line {
+    stroke-width: 1px;
+    stroke: #ADAD2C;
+}
+
 .now, .clock {
     padding: 0 15px;
 }

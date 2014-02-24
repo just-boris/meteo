@@ -15,6 +15,11 @@
         "description": "Date and time now"
     },
     {
+        "name": "sunset",
+        "title": "Sunset",
+        "description": "Sunrise and sunset visualization"
+    },
+    {
         "name": "stocks",
         "title": "Stocks",
         "description": "NASDAQ, NYSE, LSE, etc."

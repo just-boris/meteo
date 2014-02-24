@@ -1,8 +1,8 @@
-define(['jQuery', 'storage'], function($, storage) {
+define(['jQuery', 'city'], function($, city) {
     "use strict";
     function requestWeather() {
         updatesToRequest = REQUEST_INTERVAL;
-        storage.getCity(function(city) {
+        city.getCityName(function(city) {
             $.getJSON(API_URL+city).then(function(response) {
                 onLoad(response);
             });
