@@ -2,7 +2,7 @@
 define(['d3', 'city'], function(d3, city) {
     "use strict";
     function SunsetGraph(element) {
-        this.element = d3.select(element[0]);
+        this.element = element;
         this.animateEnter = true;
         city.getCoordinates(this.onLoad.bind(this));
     }
@@ -18,7 +18,7 @@ define(['d3', 'city'], function(d3, city) {
     SunsetGraph.prototype.update = function() {
         var opts = {margin: {left: 40, right: 40, top: 40, bottom: 70}, width: 580, height: 250};
         this.element.html('');
-        this.svg = this.element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
+        this.svg = d3.select(this.element[0]).append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
 
@@ -37,7 +37,7 @@ define(['d3', 'city'], function(d3, city) {
             path = this.plot.append("path")
                 .datum(d3.range.apply(d3, x.domain().concat(3600*1000)))
                 .attr("class", "line").attr("d", line),
-            sun = this.plot.append('circle').data([this.timeFromMidhight()]).attr({
+            sun = this.plot.append('circle').data([this.timeFromMidnight()]).attr({
                 cx: x(0), cy: y(0), r:0
             }).style('fill', 'url(#sunFill)');
         this.gradient('sunFill', '#ffa500', '#ffcc00');
@@ -60,7 +60,7 @@ define(['d3', 'city'], function(d3, city) {
         });
         path.attr('d', line);
     };
-    SunsetGraph.prototype.timeFromMidhight = function() {
+    SunsetGraph.prototype.timeFromMidnight = function() {
         var now = new Date();
         now.setHours(0);
         now.setMinutes(0);
