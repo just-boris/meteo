@@ -22,7 +22,7 @@ define(['d3', 'city'], function(d3, city) {
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
 
-        var x = d3.time.scale.utc().range([0, opts.width]).domain([0, 24*3600*1000]),
+        var x = d3.time.scale.utc().range([0, opts.width]).domain([0, 24*3600*1000+1]),
             y = d3.scale.linear().range([opts.height, 0]).domain([-1, 1]).nice();
 
         var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 3).tickFormat(d3.time.format.utc("%H:%M"));
@@ -35,7 +35,7 @@ define(['d3', 'city'], function(d3, city) {
 
         var line = d3.svg.line().x(x).y(y(0)),
             path = this.plot.append("path")
-                .datum(d3.range.apply(d3, x.domain().concat(3600*1000)))
+                .datum(d3.range.apply(d3, x.domain().concat(1800*1000)))
                 .attr("class", "line").attr("d", line),
             sun = this.plot.append('circle').data([this.timeFromMidnight()]).attr({
                 cx: x(0), cy: y(0), r:0
