@@ -16,7 +16,7 @@ define(['d3', 'city'], function(d3, city) {
         });
     };
     SunsetGraph.prototype.update = function() {
-        var opts = {margin: {left: 40, right: 40, top: 40, bottom: 70}, width: 580, height: 250};
+        var opts = {margin: {left: 40, right: 40, top: 40, bottom: 70}, width: 600, height: 250};
         this.element.html('');
         this.svg = d3.select(this.element[0]).append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
@@ -39,7 +39,12 @@ define(['d3', 'city'], function(d3, city) {
                 .attr("class", "line").attr("d", line),
             sun = this.plot.append('circle').data([this.timeFromMidnight()]).attr({
                 cx: x(0), cy: y(0), r: 0
-            }).style('fill', 'url(#sunFill)');
+            }).style('fill', 'url(#sunFill)'),
+            zeroTicks = this.plot.selectAll('.zero').data(this.getZeroTimes()).enter().append('text').classed('zero', true).attr({
+                x: x,
+                y: y(0),
+                dy: '1.5em'
+            }).style({opacity: 0, 'text-anchor':'middle'}).text(d3.time.format.utc("%H:%M"));
         this.gradient('sunFill', '#ffa500', '#ffcc00');
 
         line.y(function(time) {
@@ -50,6 +55,7 @@ define(['d3', 'city'], function(d3, city) {
             var transition = this.svg.transition().duration(1000);
             path = transition.selectAll('.line');
             sun = transition.transition().duration(1000).selectAll('circle');
+            zeroTicks = transition.transition().duration(1000).selectAll('.zero');
         }
         sun.attr({
             cx: x,
@@ -58,9 +64,15 @@ define(['d3', 'city'], function(d3, city) {
                 return y(this.sunPosition(time));
             }.bind(this)
         });
+        zeroTicks.style({opacity: 1});
         path.attr('d', line);
     };
+    SunsetGraph.prototype.getZeroTimes = function() {
+        var time = this.radToTime(Math.acos(this.sunAltitudeOffset()/this.sunAmplitude()));
+        return [new Date(this.msecInDay-time - this.getNoonOffset()), new Date(time - this.getNoonOffset())];
+    };
     SunsetGraph.prototype.axialTilt = 23.452;
+    SunsetGraph.prototype.msecInDay = 1000 * 60 * 60 * 24;
     SunsetGraph.prototype.timeFromMidnight = function() {
         var now = new Date();
         now.setHours(0);
@@ -71,9 +83,8 @@ define(['d3', 'city'], function(d3, city) {
     };
     SunsetGraph.prototype.dayInYear = function() {
         var now = new Date(),
-            start = new Date(now.getFullYear(), 0, 0),
-            oneDay = 1000 * 60 * 60 * 24;
-        return Math.floor((now - start) / oneDay);
+            start = new Date(now.getFullYear(), 0, 0);
+        return Math.floor((now - start) / this.msecInDay);
     };
     SunsetGraph.prototype.getSummerSolstice = function() {
         return 31 + 28 + 31 + 30 + 31 + 22;
@@ -88,7 +99,10 @@ define(['d3', 'city'], function(d3, city) {
         return 2 * Math.PI * days / (365);
     };
     SunsetGraph.prototype.timeToRad = function(time) {
-        return Math.PI * time / (3600 * 1000 * 12);
+        return Math.PI * time / (this.msecInDay/2);
+    };
+    SunsetGraph.prototype.radToTime = function(rad) {
+        return (this.msecInDay/2) * rad / Math.PI;
     };
     SunsetGraph.prototype.sunPosition = function(time) {
         return -this.sunAmplitude() * Math.cos(this.timeToRad(time + this.getNoonOffset())) + this.sunAltitudeOffset();
