@@ -6,7 +6,7 @@ define('geolocation', [], function() {
 define(['localStorage', 'geolocation', 'jQuery'], function(storage, geolocation, $) {
     "use strict";
     function getStoredCity() {
-        return storage.getItem('city');
+        return location.search.substring(1) || storage.getItem('city');
     }
     function getPosition(callback) {
         geolocation.getCurrentPosition(function (response) {
