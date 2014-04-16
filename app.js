@@ -5,7 +5,8 @@ requirejs.config({
         underscore: '//yandex.st/underscore/1.5.2/underscore-min',
         jQuery: 'http://yandex.st/jquery/2.1.0/jquery.min',
         text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text',
-        json: 'vendor/require-json'
+        json: 'vendor/require-json',
+        suncalc: 'vendor/suncalc'
     },
     shim: {
         jQuery: {exports: 'jQuery'},
