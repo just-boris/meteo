@@ -1,16 +1,23 @@
 /*global define*/
-define(['d3', 'jQuery'], function(d3, $) {
+define(['jQuery', 'city'], function($, city) {
     "use strict";
     function TimeNow(element) {
+        this.element = element;
         this.time = $('<div>').appendTo(element).addClass('time centered jumbotron');
         this.date = $('<h1>').appendTo(element).addClass('date');
-        this.updateTime();
-        element.on('update', this.updateTime.bind(this));
+        city.getCoordinates(this.onLoadLocation.bind(this));
     }
+    TimeNow.prototype.onLoadLocation = function(coords) {
+        this.coords = coords;
+        this.updateTime();
+        this.element.on('update', this.updateTime.bind(this));
+    };
     TimeNow.prototype.updateTime = function() {
-        var now = new Date();
-        this.time.text(d3.time.format('%H:%M')(now));
-        this.date.text(d3.time.format('%a, %e %B %Y')(now));
+        var self = this;
+        city.getLocalTime(this.coords, function(now) {
+            self.time.text(now.format('H:m'));
+            self.date.text(now.format('ddd, D MMMM YYYY'));
+        });
     };
     TimeNow.className = 'clock';
     return TimeNow;

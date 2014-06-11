@@ -3,7 +3,7 @@ define('geolocation', [], function() {
     "use strict";
     return navigator.geolocation;
 });
-define(['localStorage', 'geolocation', 'jQuery'], function(storage, geolocation, $) {
+define(['localStorage', 'geolocation', 'jQuery', 'moment-timezone', 'moment-timezone-data'], function(storage, geolocation, $, moment) {
     "use strict";
     function getStoredCity() {
         return location.search.substring(1) || storage.getItem('city');
@@ -21,17 +21,27 @@ define(['localStorage', 'geolocation', 'jQuery'], function(storage, geolocation,
         });
     }
 
+    var timezone;
+
     return {
         getTimezone: function(coords, callback) {
-            $.getJSON('https://maps.googleapis.com/maps/api/timezone/json?timestamp='+(Date.now()/1000)+'&sensor=true&location='+coords.reverse().join(','), function(json) {
-                callback((json.rawOffset+json.dstOffset)/3600);
+            if(!timezone) {
+                timezone = $.getJSON('https://maps.googleapis.com/maps/api/timezone/json?timestamp='+(Date.now()/1000)+'&sensor=true&location='+coords.join(','));
+            }
+            timezone.then(function(json) {
+                callback(json);
+            });
+        },
+        getLocalTime: function(coords, callback) {
+            this.getTimezone(coords, function(timezone) {
+                callback(moment().tz(timezone.timeZoneId));
             });
         },
         getCoordinates: function(callback) {
             var city = getStoredCity();
             if(city) {
                 geocode(city, function(city) {
-                    callback(city.Point.pos.split(' ').map(function(coord) {return parseFloat(coord);}));
+                    callback(city.Point.pos.split(' ').map(function(coord) {return parseFloat(coord);}).reverse());
                 });
             }
             else {

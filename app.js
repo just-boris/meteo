@@ -5,6 +5,9 @@ requirejs.config({
         underscore: '//yandex.st/underscore/1.5.2/underscore-min',
         jQuery: 'http://yandex.st/jquery/2.1.0/jquery.min',
         text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text',
+        moment: 'http://momentjs.com/downloads/moment',
+        'moment-timezone': 'http://momentjs.com/downloads/moment-timezone',
+        'moment-timezone-data': 'vendor/moment-timezone-data',
         json: 'vendor/require-json',
         suncalc: 'vendor/suncalc'
     },

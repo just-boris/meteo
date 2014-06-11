@@ -1,5 +1,5 @@
 /*global define*/
-define(['d3', 'city', 'suncalc'], function(d3, city, suncalc) {
+define(['d3', 'city', 'suncalc', 'moment-timezone'], function(d3, city, suncalc, moment) {
     "use strict";
     function SunsetGraph(element) {
         this.element = element;
@@ -9,24 +9,28 @@ define(['d3', 'city', 'suncalc'], function(d3, city, suncalc) {
     SunsetGraph.prototype.onLoad = function(coords) {
         var self = this;
         this.coords = coords;
-        city.getTimezone(coords, function(timezone) {
-            self.timezone = timezone;
-            self.element.on('update', self.update.bind(self));
-            self.update();
-        });
+        self.element.on('update', self.getTime.bind(self));
+        self.getTime();
     };
-    SunsetGraph.prototype.update = function() {
-        var opts = {margin: {left: 40, right: 40, top: 40, bottom: 70}, width: 600, height: 250},
-            now = new Date();
+    SunsetGraph.prototype.getTime = function() {
+        city.getLocalTime(this.coords, this.update.bind(this));
+    };
+    SunsetGraph.prototype.update = function(now) {
+        var opts = {margin: {left: 40, right: 40, top: 40, bottom: 70}, width: 600, height: 250};
         this.element.html('');
         this.svg = d3.select(this.element[0]).append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);
         this.plot = this.svg.append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")");
 
-        var x = d3.time.scale().range([0, opts.width]).domain(this.getDayBounds(now)),
+        var x = d3.time.scale().range([0, opts.width]).domain([
+                moment(now).startOf('day').toDate(),
+                moment(now).endOf('day').toDate()
+            ]),
             y = d3.scale.linear().range([opts.height, 0]).domain([-Math.PI/2, Math.PI/2]).nice();
 
-        var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 3).tickFormat(d3.time.format("%H:%M"));
+        var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 3).tickFormat(function(d) {
+            return moment(d).tz(now.tz()).format('HH:mm');
+        });
 
         this.plot.append("g").attr("class", "x axis").attr("transform", "translate(0," + opts.height + ")").call(xAxis);
         this.plot.append('line').attr({
@@ -41,12 +45,14 @@ define(['d3', 'city', 'suncalc'], function(d3, city, suncalc) {
             sun = this.plot.append('circle').data([now]).attr({
                 cx: x(0), cy: y(0), r: 0
             }).style('fill', 'url(#sunFill)'),
-            sunTimes = suncalc.getTimes(this.toNoon(now), this.coords[0], this.coords[1]),
+            sunTimes = suncalc.getTimes(moment(now).startOf('day').add('hours', 12), this.coords[0], this.coords[1]),
             zeroTicks = this.plot.selectAll('.zero').data([sunTimes.sunrise, sunTimes.sunset]).enter().append('text').classed('zero', true).attr({
                 x: x,
                 y: y(0),
                 dy: '1.5em'
-            }).style({opacity: 0, 'text-anchor':'middle'}).text(d3.time.format("%H:%M"));
+            }).style({opacity: 0, 'text-anchor':'middle'}).text(function(d) {
+                return moment(d).tz(now.tz()).format('HH:mm');
+            });
         this.gradient('sunFill', '#ffa500', '#ffcc00');
 
         line.y(function(time) {
