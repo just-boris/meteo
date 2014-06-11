@@ -15,7 +15,7 @@ define(['jQuery', 'city'], function($, city) {
     TimeNow.prototype.updateTime = function() {
         var self = this;
         city.getLocalTime(this.coords, function(now) {
-            self.time.text(now.format('H:m'));
+            self.time.text(now.format('H:mm'));
             self.date.text(now.format('ddd, D MMMM YYYY'));
         });
     };
