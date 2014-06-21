@@ -19,7 +19,7 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
         var x = d3.time.scale().range([0, opts.width]).domain(d3.extent(this.data, function(d) { return d.time; })),
             y = d3.scale.linear().range([opts.height, 0]).domain(tempBounds).nice();
 
-        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat("");
+        var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hours, 12).tickFormat("");
         var yAxis = d3.svg.axis().scale(y).orient("left");
 
         this.plot.append("g").attr("class", "x axis").attr("transform", "translate(0," + opts.height + ")").call(xAxis);
@@ -29,7 +29,7 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
             .attr('y', -20)
             .attr("dy", ".25em")
             .text("°C");
-        var tickInterval = x.range()[1]/x.ticks().length;
+        var tickInterval = x.range()[1]/x.ticks.apply(x, xAxis.ticks()).length;
         this.plot.selectAll('.x.axis .tick').append('switch').append('foreignObject').attr({
             y: 6,
             x: -tickInterval/2,
