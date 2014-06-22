@@ -1,5 +1,5 @@
 /*global define*/
-define(['d3', 'city', 'suncalc', 'moment-timezone'], function(d3, city, suncalc, moment) {
+define(['d3', 'city', 'suncalc', 'moment'], function(d3, city, suncalc, moment) {
     "use strict";
     function SunsetGraph(element) {
         this.element = element;
@@ -29,7 +29,7 @@ define(['d3', 'city', 'suncalc', 'moment-timezone'], function(d3, city, suncalc,
             y = d3.scale.linear().range([opts.height, 0]).domain([-Math.PI/2, Math.PI/2]).nice();
 
         var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 3).tickFormat(function(d) {
-            return moment(d).tz(now.tz()).format('HH:mm');
+            return moment(d).zone(now.zone()).format('HH:mm');
         });
 
         this.plot.append("g").attr("class", "x axis").attr("transform", "translate(0," + opts.height + ")").call(xAxis);
@@ -51,7 +51,7 @@ define(['d3', 'city', 'suncalc', 'moment-timezone'], function(d3, city, suncalc,
                 y: y(0),
                 dy: '1.5em'
             }).style({opacity: 0, 'text-anchor':'middle'}).text(function(d) {
-                return moment(d).tz(now.tz()).format('HH:mm');
+                return moment(d).zone(now.zone()).format('HH:mm');
             });
         this.gradient('sunFill', '#ffa500', '#ffcc00');
 

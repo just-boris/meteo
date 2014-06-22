@@ -3,7 +3,7 @@ define('geolocation', [], function() {
     "use strict";
     return navigator.geolocation;
 });
-define(['localStorage', 'geolocation', 'jQuery', 'moment-timezone', 'moment-timezone-data'], function(storage, geolocation, $, moment) {
+define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, geolocation, $, moment) {
     "use strict";
     function getStoredCity() {
         return location.search.substring(1) || storage.getItem('city');
@@ -34,7 +34,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment-timezone', 'moment-time
         },
         getLocalTime: function(coords, callback) {
             this.getTimezone(coords, function(timezone) {
-                callback(moment().tz(timezone.timeZoneId));
+                callback(moment().zone(-(timezone.rawOffset+timezone.dstOffset)/60));
             });
         },
         getCoordinates: function(callback) {
