@@ -10,7 +10,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
     }
     function getPosition(callback) {
         geolocation.getCurrentPosition(function (response) {
-            callback([response.coords.longitude, response.coords.latitude]);
+            callback({long: response.coords.longitude, lat: response.coords.latitude});
         });
     }
     function geocode(geoInfo, callback) {
@@ -26,7 +26,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
     return {
         getTimezone: function(coords, callback) {
             if(!timezone) {
-                timezone = $.getJSON('https://maps.googleapis.com/maps/api/timezone/json?timestamp='+(Date.now()/1000)+'&sensor=true&location='+coords.join(','));
+                timezone = $.getJSON('https://maps.googleapis.com/maps/api/timezone/json?timestamp='+(Date.now()/1000)+'&sensor=true&location='+coords.lat+','+coords.long);
             }
             timezone.then(function(json) {
                 callback(json);
@@ -41,7 +41,8 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
             var city = getStoredCity();
             if(city) {
                 geocode(city, function(city) {
-                    callback(city.Point.pos.split(' ').map(function(coord) {return parseFloat(coord);}).reverse());
+                    var position = city.Point.pos.split(' ').map(function(coord) {return parseFloat(coord);});
+                    callback({long: position[0], lat: position[1]});
                 });
             }
             else {
@@ -54,7 +55,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
                 callback(city);
             } else {
                 getPosition(function(coords) {
-                    geocode(coords.join(','), function(city) {
+                    geocode(coords.long+','+coords.lat, function(city) {
                         callback(city.name);
                     });
                 });

@@ -45,7 +45,7 @@ define(['d3', 'city', 'suncalc', 'moment'], function(d3, city, suncalc, moment) 
             sun = this.plot.append('circle').data([now]).attr({
                 cx: x(0), cy: y(0), r: 0
             }).style('fill', 'url(#sunFill)'),
-            sunTimes = suncalc.getTimes(moment(now).startOf('day').add('hours', 12), this.coords[0], this.coords[1]),
+            sunTimes = suncalc.getTimes(moment(now).startOf('day').add('hours', 12), this.coords.lat, this.coords.long),
             zeroTicks = this.plot.selectAll('.zero').data([sunTimes.sunrise, sunTimes.sunset]).enter().append('text').classed('zero', true).attr({
                 x: x,
                 y: y(0),
@@ -56,7 +56,7 @@ define(['d3', 'city', 'suncalc', 'moment'], function(d3, city, suncalc, moment) 
         this.gradient('sunFill', '#ffa500', '#ffcc00');
 
         line.y(function(time) {
-            return y(suncalc.getPosition(time, this.coords[0], this.coords[1]).altitude);
+            return y(suncalc.getPosition(time, this.coords.lat, this.coords.long).altitude);
         }.bind(this));
         if(this.animateEnter) {
             this.animateEnter = false;
@@ -69,7 +69,7 @@ define(['d3', 'city', 'suncalc', 'moment'], function(d3, city, suncalc, moment) 
             cx: x,
             r: 10,
             cy: function(time) {
-                return y(suncalc.getPosition(time, this.coords[0], this.coords[1]).altitude);
+                return y(suncalc.getPosition(time, this.coords.lat, this.coords.long).altitude);
             }.bind(this)
         });
         zeroTicks.style({opacity: 1});
