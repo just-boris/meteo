@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Meteo tests</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/mocha/1.21.4/mocha.css"/>
+</head>
+<body>
+    <div id="mocha"></div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mocha/1.21.4/mocha.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/chai/1.9.1/chai.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.js"></script>
+    <script src="require.conf.js"></script>
+    <script>
+        mocha.setup('bdd');
+        window.expect = chai.expect;
+        require(['jQuery', 'underscore', 'temp-plot/widget.spec'], function($, _) {
+            var counter = 0;
+            window.makeContext = function(name) {
+                var config = _.extend({context: name+(counter++)}, requirejs.s.contexts._.config);
+                return requirejs.config(config);
+            };
+            mocha.run();
+        });
+    </script>
+</body>
+</html>

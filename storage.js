@@ -1,8 +1,4 @@
 /*global define, require */
-define('localStorage', [], function() {
-    "use strict";
-    return window.localStorage;
-});
 define(['localStorage', 'json!widgets.json'], function(storage, widgets) {
     "use strict";
     var allWidgets = widgets;
