@@ -8,7 +8,7 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
     }
     TemperaturePlot.prototype.onLoad = function(data) {
         var self = this,
-            opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 580, height: 300};
+            opts = {margin: {left: 40, right: 20, top: 40, bottom: 70}, width: 540, height: 300};
         this.dayInfoTpl = _.template(template);
         this.element.html('');
         this.svg = this.element.append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)

@@ -18,7 +18,7 @@ div {
     -o-transition: box-shadow 0.3s;
     transition: box-shadow 0.3s;
     position: relative;
-    min-width: 650px;
+    min-width: 600px;
     height: 410px;
     width: 50%;
     float: left;
