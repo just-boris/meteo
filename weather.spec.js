@@ -30,7 +30,7 @@ describe("weather service", function () {
     });
 
     it("should register element and call callback on load", function () {
-        this.server.respondWith("GET", "http://api.openweathermap.org/data/2.5/forecast?&mode=json&units=metric&q=test-ville",
+        this.server.respondWith("GET", "http://api.openweathermap.org/data/2.5/forecast?mode=json&units=metric&q=test-ville",
             [200, { "Content-Type": "application/json" },
                 '{"type": "kind a weather data"}']);
         var widget = new FakeWidget();

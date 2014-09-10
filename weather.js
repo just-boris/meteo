@@ -13,7 +13,7 @@ define(['jQuery', 'city'], function($, city) {
             callback(response);
         });
     }
-    var API_URL = 'http://api.openweathermap.org/data/2.5/forecast?&mode=json&units=metric&q=',
+    var API_URL = 'http://api.openweathermap.org/data/2.5/forecast?mode=json&units=metric&q=',
         REQUEST_INTERVAL = 3,
         callbacks = [],
         updatesToRequest;

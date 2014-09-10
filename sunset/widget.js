@@ -45,7 +45,7 @@ define(['d3', 'city', 'suncalc', 'moment'], function(d3, city, suncalc, moment) 
             sun = this.plot.append('circle').data([now]).attr({
                 cx: x(0), cy: y(0), r: 0
             }).style('fill', 'url(#sunFill)'),
-            sunTimes = suncalc.getTimes(moment(now).startOf('day').add('hours', 12), this.coords.lat, this.coords.long),
+            sunTimes = suncalc.getTimes(moment(now).startOf('day').add(12, 'hours'), this.coords.lat, this.coords.long),
             zeroTicks = this.plot.selectAll('.zero').data([sunTimes.sunrise, sunTimes.sunset]).enter().append('text').classed('zero', true).attr({
                 x: x,
                 y: y(0),
