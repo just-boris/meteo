@@ -29,23 +29,24 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
             .attr('y', -20)
             .attr("dy", ".25em")
             .text("°C");
-        var tickInterval = x.range()[1]/x.ticks.apply(x, xAxis.ticks()).length;
+        var tickInterval = x.range()[1]/x.ticks.apply(x, xAxis.ticks()).length,
+            ticks = this.plot.selectAll('.x.axis .tick').data();
         this.plot.selectAll('.x.axis .tick').append('switch').append('foreignObject').attr({
             y: 6,
             x: -tickInterval/2,
             width: tickInterval,
             height: 60
         }).append('xhtml:body').attr('xmlns', "http://www.w3.org/1999/xhtml").html(function(d) {
-                var data = self.findDataByDate(d);
-                return self.dayInfoTpl(_.extend({}, data, {
-                    temp: Util.formatTemp(data.temp),
-                    time: d3.time.format('%H:%M')(d),
-                    date: d3.time.format('%_d %b')(d),
-                    cloudIcon: self.getWeatherIcon(data, d)
-                }));
-            });
+            var data = self.getWeatherOnInterval(ticks[ticks.indexOf(d)-1], d);
+            return self.dayInfoTpl(_.extend({}, data, {
+                temp: Util.formatTemp(data.temp),
+                time: d3.time.format('%H:%M')(d),
+                date: d3.time.format('%_d %b')(d),
+                cloudIcon: self.getWeatherIcon(data, d)
+            }));
+        });
         this.plot.selectAll('.x.axis .tick').append('title').text(function(d) {
-            return self.findDataByDate(d).weather.description;
+            return self.getWeatherOnInterval(ticks[ticks.indexOf(d)-1], d).weather.description;
         });
 
         if(tempBounds[0]*tempBounds[1] < 0) {
@@ -87,12 +88,20 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
     TemperaturePlot.prototype.getWeatherIcon = function(d, date) {
         return Util.getCloudIcon(d.weather.id, date);
     };
-    TemperaturePlot.prototype.findDataByDate = function(date) {
-        var result;
-        this.data.some(function(d) {
-            return d.time > date.valueOf() && (result = d);
-        });
-        //noinspection JSUnusedAssignment
+    TemperaturePlot.prototype.getWeatherOnInterval = function(from, to) {
+        var data = this.data.filter(function(d) {
+                return (!from || d.time > from.valueOf())
+                    && d.time <= to.valueOf();
+            }),
+            result = {time: to.valueOf(), weather: {}};
+        if(data.length > 0) {
+            result.weather = Util.getWorstWeather(data.map(function(w) {
+                return w.weather;
+            }));
+            result.temp = Math.min.apply(null, data.map(function(w) {
+                return w.temp;
+            }));
+        }
         return result;
     };
     TemperaturePlot.prototype.getColorStops = function(min, max) {
