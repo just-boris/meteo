@@ -16,7 +16,7 @@ define(['d3', 'city', 'suncalc', 'moment'], function(d3, city, suncalc, moment) 
         city.getLocalTime(this.coords, this.update.bind(this));
     };
     SunsetGraph.prototype.update = function(now) {
-        var opts = {margin: {left: 40, right: 40, top: 40, bottom: 70}, width: 600, height: 250};
+        var opts = {margin: {left: 40, right: 20, top: 40, bottom: 40}, width: 540, height: 250};
         this.element.html('');
         this.svg = d3.select(this.element[0]).append("svg").attr("width", opts.width + opts.margin.left + opts.margin.right)
             .attr("height", opts.height + opts.margin.top + opts.margin.bottom);

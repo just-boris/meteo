@@ -23,5 +23,10 @@
         "name": "stocks",
         "title": "Stocks",
         "description": "NASDAQ, NYSE, LSE, etc."
+    },
+    {
+        "name": "currency",
+        "title": "Currency stocks",
+        "description": "You can see how euro and dollar rises"
     }
 ]
