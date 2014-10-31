@@ -31,29 +31,29 @@ describe("temp-plot", function () {
         var widget = new Widget($('<div>'));
         this.weatherMock._callback({"list": [
                 {
-                    "dt": 1409605200,
+                    "dt": new Date(2014, 8, 2, 12).getTime()/1000,
                     "main": {"temp": 10.29},
                     "weather": [{"id": 801, "main": "Clouds", "description": "few clouds", "icon": "02n"}]
                 },
                 {
                     "weather": [{"id": 803,"main": "Clouds","description": "broken clouds","icon": "04d"}],
                     "main": {"temp": 16.18},
-                    "dt": 1409670000
+                    "dt": new Date(2014, 8, 2, 18).getTime()/1000
                 },
                 {
                     "weather": [{"id": 800,"main": "Clear","description": "sky is clear","icon": "01n"}],
                     "main": {"temp": 6.77},
-                    "dt": 1409702400
+                    "dt": new Date(2014, 8, 3, 3).getTime()/1000
                 },
                 {
                     "weather": [{"id": 801,"main": "Clouds","description": "few clouds","icon": "02n"}],
                     "main": {"temp": 10.87},
-                    "dt": 1409864400
+                    "dt": new Date(2014, 8, 5).getTime()/1000
                 },
                 {
                     "weather": [{"id": 800,"main": "Clear","description": "sky is clear","icon": "01n"}],
                     "main": {"temp": 12.35},
-                    "dt": 1410026400
+                    "dt": new Date(2014, 8, 6, 21).getTime()/1000
                 }
             ]}
         );

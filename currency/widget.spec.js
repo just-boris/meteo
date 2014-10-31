@@ -11,6 +11,7 @@ describe("currency-plot", function () {
             spec.currencyMock = {
                 load: function () {
                     this.args = Array.prototype.slice.call(arguments, 0);
+                    return $.Deferred();
                 }
             };
             return spec.currencyMock;
