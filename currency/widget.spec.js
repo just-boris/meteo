@@ -1,7 +1,7 @@
 describe("currencyLoader", function () {
 
 });
-describe("currency-plot", function () {
+xdescribe("currency-plot", function () {
     var Widget, require, clock;
 
     beforeEach(function () {
