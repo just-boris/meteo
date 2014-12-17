@@ -1,0 +1,3 @@
+<% data.forEach(function(item) { %>
+  <p><span class="stripe" style="background: <%= colors[item.label] %>"></span> <%= item.label %>: <%= item.value.toFixed(2) %></p>
+<% }) %>
