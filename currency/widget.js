@@ -1,5 +1,5 @@
 /*global define*/
-define('currencyLoader', ['jQuery', 'moment'], function ($, moment) {
+define('currencyLoader', ['jQuery'], function ($) {
     var BASE_URL = 'http://currency.webogram.org/rates/';
     return {
         load: function(series) {
@@ -44,6 +44,9 @@ define(['d3', 'jQuery', 'underscore', 'currencyLoader', 'text!currency/widget.tp
         this.plot.append("g").attr("class", "x axis").attr("transform", "translate(0," + opts.height + ")").call(xAxis);
         this.plot.append("g").attr("class", "y axis").call(yAxis);
 
+        this.series.forEach(function(serie) {
+            this.generateGradient('currency'+serie, this.seriesColors[serie]);
+        }, this);
 
         var line = d3.svg.line()
                 .x(function(d) {
@@ -52,8 +55,13 @@ define(['d3', 'jQuery', 'underscore', 'currencyLoader', 'text!currency/widget.tp
                 .y(y.range()[0]),
             path = this.plot.selectAll('.line').data(data).enter().append('path')
                 .attr("class", "line")
-                .style('stroke', function(d) {
-                    return self.seriesColors[d.label];
+                .style({
+                    stroke: function(d) {
+                        return self.seriesColors[d.label];
+                    },
+                    fill: function(d) {
+                        return 'url(#currency' + d.label + ')'
+                    }
                 })
                 .attr("d", function(d){
                     return line(d.values);
@@ -116,6 +124,26 @@ define(['d3', 'jQuery', 'underscore', 'currencyLoader', 'text!currency/widget.tp
         return d3.extent(values, function(d) {
             return d.value;
         })
+    };
+    CurrencyPlot.prototype.generateGradient = function(name, color) {
+        this.svg.append('defs')
+            .append('linearGradient')
+                .attr({
+                    id: name,
+                    spreadMethod: 'pad',
+                    x1: "0%",
+                    y1: "0%",
+                    x2: "0%",
+                    y2: "100%"
+                }).selectAll('stop').data([0.3, 0]).enter()
+            .append('stop')
+                .attr({
+                    offset: function(d, i) {
+                        return i*75+'%'
+                    },
+                    'stop-color': color,
+                    'stop-opacity': function(d) {return d}
+                });
     };
     CurrencyPlot.prototype.series = ['EUR', 'USD'];
     CurrencyPlot.prototype.seriesColors = {
