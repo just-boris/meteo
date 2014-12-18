@@ -83,7 +83,7 @@ define(['d3', 'jQuery', 'underscore', 'currencyLoader', 'text!currency/widget.tp
         }
     };
     CurrencyPlot.prototype.updateTooltip = function() {
-        var x = d3.event.offsetX - this.opts.margin.left,
+        var x = d3.event.layerX - this.opts.margin.left,
             range = this.x.range();
         if(x > range[0] && x < range[1]) {
             if(!this.rule) {
