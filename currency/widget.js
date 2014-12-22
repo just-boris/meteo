@@ -3,7 +3,34 @@ define('currencyLoader', ['jQuery'], function ($) {
     var BASE_URL = 'http://currency.webogram.org/rates/';
     return {
         load: function(series) {
-            return $.ajax(BASE_URL+series.join(','), {dataType: "jsonp"});
+            return $.ajax(BASE_URL+series.join(','), {dataType: "jsonp"}).then(function(response) {
+                return Object.keys(response).map(function(key) {
+                    var result = response[key].map(function(value) {
+                        return {time: new Date(value.date).valueOf(), value: parseFloat(value.rate)}
+                    }).reduce(function(all, value) {
+                        var last = all.slice(-1)[0];
+                        if(last.length > 0 && value.time - last[0].time > 1800*1000) {
+                            all.push([value]);
+                        } else {
+                            last.push(value);
+                        }
+                        return all;
+                    }, [[]]).map(function computeAverage(values) {
+                        var avg = values.reduce(function(total, value) {
+                            total.time += value.time;
+                            total.value += value.value;
+                            return total;
+                        });
+                        avg.time = new Date(avg.time/values.length);
+                        avg.value = avg.value/values.length;
+                        return avg;
+                    });
+                    return {
+                        label: key.split(' ').shift(),
+                        values: result
+                    }
+                });
+            });
         }
     }
 });
@@ -14,15 +41,7 @@ define(['d3', 'jQuery', 'underscore', 'currencyLoader', 'text!currency/widget.tp
         this.makeTemplate = _.template(template);
         var self = this;
         currencyLoader.load(this.series).done(function(results) {
-            var data = self.series.map(function(serie) {
-                return {
-                    label: serie,
-                    values: results[serie + ' to RUB'].map(function(value) {
-                        return {time: new Date(value.date), value: parseFloat(value.rate)}
-                    })
-                }
-            });
-            self.onLoad(data);
+            self.onLoad(results);
         });
     }
     CurrencyPlot.prototype.onLoad = function(data) {
