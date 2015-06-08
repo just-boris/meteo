@@ -1,46 +1,49 @@
 /*global define*/
-define('currencyLoader', ['jQuery'], function ($) {
-    var BASE_URL = 'http://currency.webogram.org/rates/';
+define('currencyLoader', ['jQuery', 'moment'], function ($, moment) {
+    "use strict";
+    var API_TOKEN = '4e64beff93d94e4c92078a4e6997eaa8',
+        BASE_URL = 'https://openexchangerates.org/api/historical/';
     return {
-        load: function(series) {
-            return $.ajax(BASE_URL+series.join(','), {dataType: "jsonp"}).then(function(response) {
-                return Object.keys(response).map(function(key) {
-                    var result = response[key].map(function(value) {
-                        return {time: new Date(value.date).valueOf(), value: parseFloat(value.rate)}
-                    }).reduce(function(all, value) {
-                        var last = all.slice(-1)[0];
-                        if(last.length > 0 && value.time - last[0].time > 1800*1000) {
-                            all.push([value]);
-                        } else {
-                            last.push(value);
-                        }
-                        return all;
-                    }, [[]]).map(function computeAverage(values) {
-                        var avg = values.reduce(function(total, value) {
-                            total.time += value.time;
-                            total.value += value.value;
-                            return total;
-                        });
-                        avg.time = new Date(avg.time/values.length);
-                        avg.value = avg.value/values.length;
-                        return avg;
+        load: function(dateFrom, dateTo, series) {
+            dateFrom = moment(dateFrom);
+            var requests = [];
+            while(dateFrom < dateTo) {
+                var request = $.ajax(BASE_URL+dateFrom.format('YYYY-MM-DD')+'.json?app_id='+API_TOKEN).pipe(function(response) {
+                    var base = response.rates['RUB'],
+                        result = {
+                            time: response.timestamp*1000
+                        };
+                    series.forEach(function(label) {
+                        result[label] = base/response.rates[label];
                     });
+                    return result;
+                });
+                requests.push(request);
+                dateFrom.add(1, 'days');
+            }
+            return $.when.apply($, requests).then(function() {
+                var results = Array.prototype.slice.call(arguments);
+                return series.map(function(label) {
                     return {
-                        label: key.split(' ').shift(),
-                        values: result
-                    }
+                        label: label,
+                        values: results.map(function(day) {
+                            return {time: day.time, value: day[label]};
+                        })
+                    };
                 });
             });
         }
-    }
+    };
 });
 define(['d3', 'jQuery', 'underscore', 'currencyLoader', 'text!currency/widget.tpl.html'], function(d3, $, _, currencyLoader, template) {
     "use strict";
     function CurrencyPlot(element) {
         this.element = element;
         this.makeTemplate = _.template(template);
-        var self = this;
-        currencyLoader.load(this.series).done(function(results) {
+        var self = this,
+            dateTo = new Date(),
+            dateFrom = new Date(dateTo.getTime()-1000*3600*24*7);
+        currencyLoader.load(dateFrom, dateTo, this.series).done(function(results) {
             self.onLoad(results);
         });
     }
