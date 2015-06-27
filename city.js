@@ -14,7 +14,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
         });
     }
     function geocode(geoInfo, callback) {
-        $.getJSON('http://geocode-maps.yandex.ru/1.x/?lang=en-US&results=1&format=json&kind=locality&geocode=' + geoInfo, function (json) {
+        $.getJSON('https://geocode-maps.yandex.ru/1.x/?lang=en-US&results=1&format=json&kind=locality&geocode=' + geoInfo, function (json) {
             callback(json.response.GeoObjectCollection.featureMember[0].GeoObject);
         }, function (error) {
             console.warn(error);
