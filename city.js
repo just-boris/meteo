@@ -14,8 +14,14 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
         });
     }
     function geocode(geoInfo, callback) {
-        $.getJSON('https://geocode-maps.yandex.ru/1.x/?lang=en-US&results=1&format=json&kind=locality&geocode=' + geoInfo, function (json) {
-            callback(json.response.GeoObjectCollection.featureMember[0].GeoObject);
+        $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?address=' + geoInfo, function (json) {
+            if(json.results && json.results.length > 0) {
+                var result = json.results[0];
+                callback({
+                    name: result.formatted_address.split(',').shift(),
+                    location: result.geometry.location
+                });
+            }
         }, function (error) {
             console.warn(error);
         });
@@ -41,8 +47,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
             var city = getStoredCity();
             if(city) {
                 geocode(city, function(city) {
-                    var position = city.Point.pos.split(' ').map(function(coord) {return parseFloat(coord);});
-                    callback({long: position[0], lat: position[1]});
+                    callback({long: city.location.lng, lat: city.location.lat});
                 });
             }
             else {
