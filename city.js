@@ -60,7 +60,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
                 callback(city);
             } else {
                 getPosition(function(coords) {
-                    geocode(coords.long+','+coords.lat, function(city) {
+                    geocode(coords.lat+','+coords.long, function(city) {
                         callback(city.name);
                     });
                 });
