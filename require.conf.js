@@ -5,8 +5,8 @@ requirejs.config({
         jQuery: '//yandex.st/jquery/2.1.0/jquery.min',
         text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text',
         moment: '//momentjs.com/downloads/moment',
-        json: 'vendor/require-json',
-        suncalc: 'vendor/suncalc'
+        json: 'deps/require-json',
+        suncalc: 'deps/suncalc'
     },
     shim: {
         jQuery: {exports: 'jQuery'},
