@@ -40,7 +40,7 @@ define(['localStorage', 'geolocation', 'jQuery', 'moment'], function(storage, ge
         },
         getLocalTime: function(coords, callback) {
             this.getTimezone(coords, function(timezone) {
-                callback(moment().zone(-(timezone.rawOffset+timezone.dstOffset)/60));
+                callback(moment().utcOffset((timezone.rawOffset+timezone.dstOffset)/60));
             });
         },
         getCoordinates: function(callback) {
