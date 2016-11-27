@@ -1,10 +1,14 @@
 /*global define */
 define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather', 'city'], function(_, template, Util, weather, city) {
     "use strict";
+    var templateFn = _.template(template);
     function TempNow(element) {
         weather.register(element, this.onLoad.bind(this));
-        element.on('update', this.onUpdate.bind(this));
         this.element = element;
+        this.cityName = 'Loading...';
+        city.getCityName(function(name) {
+          this.cityName = name;
+        }.bind(this))
     }
     TempNow.prototype.onEditCity = function() {
         var editing = !this.editBtn.data('editing'),
@@ -24,29 +28,20 @@ define(['underscore', 'text!temp-now/widget.tpl.html',  'weather-util', 'weather
     };
     TempNow.prototype.onLoad = function(data) {
         data = this.mapData(data);
-        this.element.html(_.template(template)(_.extend({}, data, {
-            cloudIcon: Util.getCloudIcon(data.weather.id),
-            temp: data.temp,
-            tempMax: data.tempMax,
-            tempMin: data.tempMin,
-            humidity:data.humidity,
-            pressure:data.pressure*3/4 /* hPa to mm Hg */
-        }, Util)));
+        this.element.html(templateFn(_.extend({}, data, Util)));
         this.cityBlock = this.element.find('.city_name');
         this.editBtn = this.element.find('.city_edit').data('editing', false).on('click', this.onEditCity.bind(this));
     };
-    TempNow.prototype.onUpdate = function() {
-
-    };
     TempNow.prototype.mapData = function(json) {
+        var weather = json.currently;
         return {
-            city: json.city,
-            temp: json.list[0].main.temp,
-            tempMax: json.list[0].main.temp_max,
-            tempMin: json.list[0].main.temp_min,
-            humidity: json.list[0].main.humidity,
-            pressure: json.list[0].main.pressure,
-            weather: json.list[0].weather[0]
+            city: this.cityName,
+            cloudIcon: Util.getCloudIcon(weather.icon),
+            temp: weather.temperature,
+            apparentTemp: weather.apparentTemperature,
+            humidity: weather.humidity * 100,
+            pressure: weather.pressure*3/4 /* hPa to mm Hg */,
+            summary: weather.summary
         };
     };
     TempNow.className = 'now';

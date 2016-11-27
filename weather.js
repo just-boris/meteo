@@ -1,32 +1,35 @@
 define(['jQuery', 'city'], function($, city) {
     "use strict";
-    function requestWeather() {
+    function requestWeather(callback) {
         updatesToRequest = REQUEST_INTERVAL;
-        city.getCityName(function(city) {
-            $.getJSON(API_URL+city).then(function(response) {
-                onLoad(response);
-            });
+        city.getCoordinates(function(coords) {
+            $.ajax({
+              url: apiUrl(coords.lat, coords.long),
+              dataType: 'jsonp'
+            }).then(callback);
         });
+    }
+    function apiUrl(lat, long) {
+        return 'https://api.darksky.net/forecast/c0a2d2bd1f98cbbca777ab51b01fdd20/' + lat + ',' + long + '?units=si&extend=hourly&exclude=daily,alerts,flags';
     }
     function onLoad(response) {
         callbacks.forEach(function(callback) {
             callback(response);
         });
     }
-    var API_URL = '//api.openweathermap.org/data/2.5/forecast?appid=4bbb7ef57e1449b7f7369384b30aead0&mode=json&units=metric&q=',
-        REQUEST_INTERVAL = 3,
-        callbacks = [],
-        updatesToRequest;
+    var REQUEST_INTERVAL = 3;
+    var callbacks = [];
+    var updatesToRequest;
     return {
         register: function(element, callback) {
             if(!updatesToRequest) {
                 element.on('update', function() {
                     updatesToRequest--;
                     if(!updatesToRequest) {
-                        requestWeather();
+                        requestWeather(onLoad);
                     }
                 });
-                requestWeather();
+                requestWeather(onLoad);
             }
             callbacks.push(callback);
         }

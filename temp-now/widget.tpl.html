@@ -1,5 +1,5 @@
 <h1 class="city">
-    <span class="city_name"><%= city.name %></span>
+    <span class="city_name"><%= city %></span>
     <small class="city_edit fa fa-pencil"></small>
 </h1>
 <div class="weather jumbotron">
@@ -8,9 +8,8 @@
 </div>
 <div class="properties">
     <div class="properties_col">
-        <p><%= weather.description %></p>
-        <p>Max: <%= formatTemp(tempMax, 2) %>°C</p>
-        <p>Min: <%= formatTemp(tempMin, 2) %>°C</p>
+        <p><%= summary %></p>
+        <p>Feels like: <%= formatTemp(apparentTemp, 2) %>°C</p>
     </div>
     <div class="properties_col">
         <p>Pressure: <%= formatNumber(pressure, 2) %> mm Hg</p>

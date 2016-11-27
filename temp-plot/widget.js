@@ -41,19 +41,16 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
             return self.dayInfoTpl(_.extend({}, data, {
                 temp: Util.formatTemp(data.temp),
                 time: d3.time.format('%H:%M')(d),
-                date: d3.time.format('%_d %b')(d),
-                cloudIcon: self.getWeatherIcon(data, d)
+                date: d.getHours() == 0 ? d3.time.format('%_d&nbsp;%b')(d) : '&nbsp;',
+                cloudIcon: Util.getCloudIcon(data.weather)
             }));
-        });
-        this.plot.selectAll('.x.axis .tick').append('title').text(function(d) {
-            return self.getWeatherOnInterval(ticks[ticks.indexOf(d)-1], d).weather.description;
         });
 
         if(tempBounds[0]*tempBounds[1] < 0) {
             this.plot.append('line').attr({
                 x1: x.range()[0], y1: y(0),
                 x2: x.range()[1], y2: y(0)
-            });    
+            });
         }
 
         this.createGradient('pathFill', this.getColorStops(tempBounds[0], tempBounds[1]));
@@ -77,27 +74,25 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
         path.attr('d', line);
     };
     TemperaturePlot.prototype.mapData = function(rawData) {
-        return rawData.list.map(function(d) {
+        return rawData.hourly.data.map(function(d) {
             return {
-                weather: d.weather[0],
-                time: d.dt*1000,
-                temp: d.main.temp
+                weather: d.icon,
+                summary: d.summary,
+                time: d.time*1000,
+                temp: d.temperature
             };
         });
-    };
-    TemperaturePlot.prototype.getWeatherIcon = function(d, date) {
-        return Util.getCloudIcon(d.weather.id, date);
     };
     TemperaturePlot.prototype.getWeatherOnInterval = function(from, to) {
         var data = this.data.filter(function(d) {
                 return (!from || d.time > from.valueOf())
                     && d.time <= to.valueOf();
             }),
-            result = {time: to.valueOf(), weather: {}};
+            result = {time: to.valueOf()};
         if(data.length > 0) {
-            result.weather = Util.getWorstWeather(data.map(function(w) {
-                return w.weather;
-            }));
+            var worst = Util.getWorstWeather(data)
+            result.weather = worst.weather;
+            result.summary = worst.summary;
             result.temp = Math.min.apply(null, data.map(function(w) {
                 return w.temp;
             }));

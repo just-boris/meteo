@@ -162,6 +162,7 @@ h1, h2, h3 {
 
 .plot .day_info {
     text-align: center;
+    font-size: 12px;
 }
 
 .sun-graph .line {
@@ -191,6 +192,10 @@ h1, h2, h3 {
 
 .now .properties_col:first-letter{
     text-transform: capitalize
+}
+
+.now .city_name {
+  text-transform: capitalize;
 }
 
 .now .city_edit {
