@@ -114,7 +114,7 @@ define('app', ['d3', 'jQuery', 'storage', 'Draggable'], function(d3, $, storage,
         }, this);
         window.setInterval(this.updateWidgets.bind(this), this.updateInterval);
     }
-    App.prototype.updateInterval = 5000;
+    App.prototype.updateInterval = 60000;
     App.prototype.onAddWidget = function(event, name) {
         this.addWidget(name);
     };

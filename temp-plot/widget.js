@@ -90,7 +90,7 @@ define(['d3', 'weather', 'weather-util', 'underscore', 'text!temp-plot/widget.tp
             }),
             result = {time: to.valueOf()};
         if(data.length > 0) {
-            var worst = Util.getWorstWeather(data)
+            var worst = Util.getWorstWeather(data);
             result.weather = worst.weather;
             result.summary = worst.summary;
             result.temp = Math.min.apply(null, data.map(function(w) {
